@@ -6,9 +6,9 @@
 // ============================================================
 
 const SCHEDULE_DATA = {
-  week_key: "m7",
+  week_key: "m8",
 
-  title: "TODO Th07",
+  title: "TODO Th08",
 
   // ---------------- DAILY ----------------
   daily: {

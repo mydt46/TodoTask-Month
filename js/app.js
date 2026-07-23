@@ -109,7 +109,7 @@
           line.className = "task-line";
 
           const rowGroup = makeRowGroup(line);
-		  const id = `${SCHEDULE_DATA.week_key}-w-${dayIndex}-${i}`;
+          const id = `${SCHEDULE_DATA.week_key}-w-${dayIndex}-${i}`;
           const cb = makeCheckbox({ id, className: "chk", rowGroup });
 
           const span = document.createElement("span");
@@ -396,8 +396,6 @@
     });
 
     renderAnnual(D.annual);
-
-    wireResetButton();
   }
 
   document.addEventListener("DOMContentLoaded", init);

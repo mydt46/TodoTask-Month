@@ -1,273 +1,319 @@
-:root{
-  --ink:#1f2328;
-  --sub:#3a3f45;
-  --line:#c9c9c9;
-  --paper:#ffffff;
-  --done:#a8a8a8;
+:root {
+  --ink: #1f2328;
+  --sub: #3a3f45;
+  --line: #c9c9c9;
+  --paper: #ffffff;
+  --done: #a8a8a8;
 }
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  background:#f5f5f3;
-  font-family:'Inter', sans-serif;
-  color:var(--ink);
-  display:flex;
-  justify-content:center;
-  padding:40px 16px;
+* {
+  box-sizing: border-box;
 }
-.sheet{
-  background:var(--paper);
-  width:1200px;
-  max-width:100%;
-  padding:48px 56px 56px;
-  border-radius:4px;
+body {
+  margin: 0;
+  background: #f5f5f3;
+  font-family: "Inter", sans-serif;
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.sheet {
+  background: var(--paper);
+  width: 1200px;
+  max-width: 100%;
+  padding: 48px 56px 56px;
+  border-radius: 4px;
 }
 
 /* ---------- Title ---------- */
-.title-row{
-  text-align:center;
-  margin-bottom:36px;
-  position:relative;
+.title-row {
+  text-align: center;
+  margin-bottom: 36px;
+  position: relative;
 }
-.title-row h1{
-  font-family:'Playfair Display', serif;
-  font-weight:600;
-  font-size:56px;
-  letter-spacing:1px;
-  margin:0;
-  display:inline-block;
-  position:relative;
+.title-row h1 {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  font-size: 56px;
+  letter-spacing: 1px;
+  margin: 0;
+  display: inline-block;
+  position: relative;
 }
-.sparkle{
-  position:absolute;
-  color:#f6d84a;
-  font-size:22px;
+.sparkle {
+  position: absolute;
+  color: #f6d84a;
+  font-size: 22px;
 }
-.sparkle.left{ left:-40px; top:6px; }
-.sparkle.right{ right:-40px; bottom:2px; }
+.sparkle.left {
+  left: 50px;
+  top: 6px;
+}
+.sparkle.right {
+  right: 50px;
+  bottom: 2px;
+}
+.sparkle.middle0 {
+  left: 210px;
+  top: 40px;
+}
+.sparkle.middle1 {
+  right: 210px;
+  bottom: 55px;
+}
 
-.reset-row{
-  text-align:center;
-  margin-bottom:28px;
+.month-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  margin-bottom: 28px;
 }
-.reset-btn{
-  font-family:'Inter', sans-serif;
-  font-size:12px;
-  letter-spacing:.4px;
-  color:var(--sub);
-  background:#f0f0ee;
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:6px 16px;
-  cursor:pointer;
-  transition:background .15s ease;
+.month-link {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--sub);
+  background: #f0f0ee;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
 }
-.reset-btn:hover{ background:#e6e6e3; }
+.month-link:hover {
+  background: #e6e6e3;
+}
+.month-link.active {
+  color: #1f2328;
+  background: #8fd3f4;
+  border-color: #8fd3f4;
+}
 
-section{ margin-bottom:38px; }
-h2.section-heading{
-  font-family:'Playfair Display', serif;
-  font-weight:600;
-  font-size:26px;
-  letter-spacing:1px;
-  margin:0 0 14px 0;
+section {
+  margin-bottom: 38px;
+}
+h2.section-heading {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 1px;
+  margin: 0 0 14px 0;
 }
 
 /* ---------- Weekly ---------- */
-table.weekly{
-  width:100%;
-  border-collapse:collapse;
-  table-layout:fixed;
+table.weekly {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
-table.weekly th{
-  font-size:13px;
-  letter-spacing:.5px;
-  text-align:left;
-  padding:10px 12px;
-  font-weight:700;
-  color:#1f2328;
+table.weekly th {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #1f2328;
 }
-table.weekly td.category{
-  font-weight:700;
-  font-size:13px;
-  letter-spacing:.3px;
-  padding:12px 12px 8px;
-  vertical-align:top;
+table.weekly td.category {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  padding: 12px 12px 8px;
+  vertical-align: top;
 }
-table.weekly td.item{
-  font-size:13.5px;
-  padding:6px 12px;
-  border-top:1px solid var(--line);
-  vertical-align:top;
-  height:26px;
+table.weekly td.item {
+  font-size: 13.5px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+  height: 26px;
 }
 
-.task-line{
-  display:flex;
-  align-items:flex-start;
-  gap:7px;
+.task-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
 }
-.task-line .task-text{
-  transition:color .15s ease;
+.task-line .task-text {
+  transition: color 0.15s ease;
 }
-.task-line.done .task-text{
-  color:var(--done);
+.task-line.done .task-text {
+  color: var(--done);
 }
 
 /* checkbox used inline with text (weekly items, monthly/quarterly/semi list rows) */
-.chk{
-  appearance:none;
-  -webkit-appearance:none;
-  width:15px;
-  height:15px;
-  min-width:15px;
-  border:1.5px solid #9c9c9c;
-  border-radius:3px;
-  margin-top:1px;
-  cursor:pointer;
-  position:relative;
-  background:#fff;
+.chk {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  border: 1.5px solid #9c9c9c;
+  border-radius: 3px;
+  margin-top: 1px;
+  cursor: pointer;
+  position: relative;
+  background: #fff;
 }
-.chk:checked{
-  background:#8fd3f4;
-  border-color:#8fd3f4;
+.chk:checked {
+  background: #8fd3f4;
+  border-color: #8fd3f4;
 }
-.chk:checked::after{
-  content:"";
-  position:absolute;
-  left:4px;
-  top:1px;
-  width:4px;
-  height:8px;
-  border:solid #1f2328;
-  border-width:0 2px 2px 0;
-  transform:rotate(45deg);
+.chk:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #1f2328;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 /* ---------- Row layout used for Semi Annual + Annual side by side ---------- */
-.row{
-  display:flex;
-  gap:30px;
-  align-items:flex-start;
+.row {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
 }
-.row.bottom{ margin-top:34px; }
-.col{ flex:1; min-width:0; }
+.row.bottom {
+  margin-top: 34px;
+}
+.col {
+  flex: 1;
+  min-width: 0;
+}
 
 /* ---------- Task grid: label + its checkboxes live on the same row ---------- */
-.task-grid{
-  display:flex;
-  flex-direction:column;
+.task-grid {
+  display: flex;
+  flex-direction: column;
 }
-.grid-row{
-  display:grid;
-  align-items:center;
-  column-gap:8px;
+.grid-row {
+  display: grid;
+  align-items: center;
+  column-gap: 8px;
 }
-.grid-row.data-row{
-  padding:8px 0;
-  border-bottom:1px solid var(--line);
+.grid-row.data-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
 }
-.grid-row.header-row{
-  padding-bottom:10px;
-}
-
-.task-row-label{
-  min-width:0;
-}
-.task-row-label .task-text{
-  font-size:14px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  display:block;
+.grid-row.header-row {
+  padding-bottom: 10px;
 }
 
-.grid-row .hcell{
-  aspect-ratio:1/1;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12.5px;
-  font-weight:700;
-  border-radius:4px;
-  color:#1f2328;
-  justify-self:center;
+.task-row-label {
+  min-width: 0;
+}
+.task-row-label .task-text {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.grid-row .hcell {
+  aspect-ratio: 1/1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  color: #1f2328;
+  justify-self: center;
 }
 
 /* grid checkbox cell - the colored square itself is the checkbox */
-.cell-box{
-  appearance:none;
-  -webkit-appearance:none;
-  aspect-ratio:1/1;
-  width:100%;
-  border-radius:4px;
-  border:none;
-  cursor:pointer;
-  position:relative;
-  transition:filter .12s ease;
-  justify-self:center;
+.cell-box {
+  appearance: none;
+  -webkit-appearance: none;
+  aspect-ratio: 1/1;
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.12s ease;
+  justify-self: center;
 }
-.cell-box:hover{ filter:brightness(0.95); }
-.cell-box:checked::after{
-  content:"";
-  position:absolute;
-  left:34%;
-  top:18%;
-  width:22%;
-  height:48%;
-  border:solid #1f2328;
-  border-width:0 2.5px 2.5px 0;
-  transform:rotate(45deg);
+.cell-box:hover {
+  filter: brightness(0.95);
 }
-.cell-box:disabled{ cursor:default; }
+.cell-box:checked::after {
+  content: "";
+  position: absolute;
+  left: 34%;
+  top: 18%;
+  width: 22%;
+  height: 48%;
+  border: solid #1f2328;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+.cell-box:disabled {
+  cursor: default;
+}
 
 /* ---------- Annual ---------- */
-.annual-cols{
-  display:flex;
-  gap:40px;
+.annual-cols {
+  display: flex;
+  gap: 40px;
 }
-.annual-block{
-  flex:1;
-  display:flex;
-  flex-direction:column;
+.annual-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .daily-row,
-.annual-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 0;
+.annual-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
 }
-.letter-badge{
-  width:22px;
-  height:22px;
-  min-width:22px;
-  border-radius:4px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12px;
-  font-weight:700;
+.letter-badge {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
 }
 .daily-row .task-text,
-.annual-row .task-text{
-  flex:1;
-  font-size:14px;
-  border-bottom:1px solid var(--line);
-  padding-bottom:8px;
+.annual-row .task-text {
+  flex: 1;
+  font-size: 14px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
 }
 .daily-row .cell-box,
-.annual-row .cell-box{
-  width:20px;
-  height:20px;
-  min-width:20px;
-  border-radius:3px;
+.annual-row .cell-box {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 3px;
 }
 
-@media (max-width:900px){
-  .row{ flex-direction:column; }
+@media (max-width: 1000px) {
+  .row {
+    flex-direction: column;
+  }
   /* .annual-cols{ flex-direction:column; gap:24px; } */
-  table.weekly{ font-size:12px; }
-  .title-row h1{ font-size:38px; }
+  table.weekly {
+    font-size: 12px;
+  }
+  .title-row h1 {
+    font-size: 38px;
+  }
 }
