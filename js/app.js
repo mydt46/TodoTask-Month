@@ -1,6 +1,7 @@
 // ============================================================
 // app.js — Rendering + checkbox/state logic for the
-// Cleaning Schedule. Reads content from SCHEDULE_DATA (data.js).
+// Cleaning Schedule. Reads config from SCHEDULE_DATA and task
+// content from the matching content file.
 // ============================================================
 
 (function () {
@@ -8,6 +9,7 @@
 
   // { [checkboxId]: true|false }
   let state = loadState();
+  let currentTodoKey = "";
 
   function loadState() {
     try {
@@ -69,6 +71,52 @@
     return { ids: [], inputs: [], lineEl };
   }
 
+  function getScheduleContent() {
+    if (typeof SCHEDULE_CONTENT !== "undefined") return SCHEDULE_CONTENT;
+    throw new Error("Missing schedule content file.");
+  }
+
+  function combineScheduleData(config, content) {
+    return {
+      ...config,
+      todo_key: content.todo_key,
+      title: content.title,
+      daily: {
+        ...config.daily,
+        left: content.daily.left,
+        right: content.daily.right,
+      },
+      weekly: {
+        ...config.weekly,
+        days: config.weekly.days.map((day, index) => ({
+          ...day,
+          items: content.weekly.items[index] || [],
+        })),
+      },
+      tracking: {
+        ...config.tracking,
+        items: content.tracking.items,
+      },
+      monthly: {
+        ...config.monthly,
+        items: content.monthly.items,
+      },
+      quarterly: {
+        ...config.quarterly,
+        items: content.quarterly.items,
+      },
+      semiAnnual: {
+        ...config.semiAnnual,
+        items: content.semiAnnual.items,
+      },
+      annual: {
+        ...config.annual,
+        left: content.annual.left,
+        right: content.annual.right,
+      },
+    };
+  }
+
   // ---------------------------------------------------------
   // WEEKLY
   // ---------------------------------------------------------
@@ -85,16 +133,6 @@
 
     const body = document.getElementById("weeklyCategoryRow");
 
-    // category header row
-    const catTr = document.createElement("tr");
-    data.days.forEach((day) => {
-      const td = document.createElement("td");
-      td.className = "category";
-      td.textContent = day.category;
-      catTr.appendChild(td);
-    });
-    body.appendChild(catTr);
-
     const maxItems = Math.max(...data.days.map((d) => d.items.length));
 
     for (let i = 0; i < maxItems; i++) {
@@ -109,7 +147,7 @@
           line.className = "task-line";
 
           const rowGroup = makeRowGroup(line);
-		  const id = `${SCHEDULE_DATA.week_key}-w-${dayIndex}-${i}`;
+          const id = `${currentTodoKey}-w-${dayIndex}-${i}`;
           const cb = makeCheckbox({ id, className: "chk", rowGroup });
 
           const span = document.createElement("span");
@@ -198,7 +236,7 @@
           return;
         }
 
-        const id = `${SCHEDULE_DATA.week_key}-${idPrefix}-${itemIndex}-${colIndex}`;
+        const id = `${currentTodoKey}-${idPrefix}-${itemIndex}-${colIndex}`;
         cb.checked = isChecked(id);
         cb.dataset.id = id;
 
@@ -254,7 +292,7 @@
 
         if (entry.text) {
           const rowGroup = makeRowGroup(line);
-          const id = `${SCHEDULE_DATA.week_key}-${side}-${index}`;
+          const id = `${currentTodoKey}-${side}-${index}`;
           box.checked = isChecked(id);
           box.dataset.id = id;
           rowGroup.ids.push(id);
@@ -314,7 +352,7 @@
 
         if (entry.text) {
           const rowGroup = makeRowGroup(line);
-          const id = `${SCHEDULE_DATA.week_key}-${side}-${index}`;
+          const id = `${currentTodoKey}-${side}-${index}`;
           box.checked = isChecked(id);
           box.dataset.id = id;
           rowGroup.ids.push(id);
@@ -356,7 +394,8 @@
   // Init
   // ---------------------------------------------------------
   function init() {
-    const D = SCHEDULE_DATA;
+    const D = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
+    currentTodoKey = D.todo_key;
     document.getElementById("mainTitle").textContent = D.title;
 
     renderDaily(D.daily);
@@ -396,8 +435,6 @@
     });
 
     renderAnnual(D.annual);
-
-    wireResetButton();
   }
 
   document.addEventListener("DOMContentLoaded", init);
