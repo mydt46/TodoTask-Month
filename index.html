@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleaning Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="title-row">
+    <span class="sparkle left">✦</span>
+    <h1 id="mainTitle"></h1>
+    <span class="sparkle right">✦</span>
+  </div>
+
+  <div class="reset-row">
+    <button id="resetBtn" class="reset-btn" type="button">Reset all checkboxes</button>
+  </div>
+
+  <section id="dailySection">
+    <h2 class="section-heading" id="dailyHeading"></h2>
+      <div class="annual-cols">
+        <div class="annual-block" id="dailyLeft"></div>
+        <div class="annual-block" id="dailyRight"></div>
+      </div>
+  </section>
+
+  <section id="weeklySection">
+    <h2 class="section-heading" id="weeklyHeading"></h2>
+    <table class="weekly">
+      <thead><tr id="weeklyHeaderRow"></tr></thead>
+      <tbody id="weeklyCategoryRow"></tbody>
+    </table>
+  </section>
+
+  <div class="row bottom">
+    <div class="col" style="flex:2;">
+        <section id="trackingSection">
+          <h2 class="section-heading" id="trackingHeading"></h2>
+          <div class="task-grid" id="trackingGrid"></div>
+        </section>
+    </div>
+    <div class="col" style="flex:1;">
+        <section id="quarterlySection">
+          <h2 class="section-heading" id="quarterlyHeading"></h2>
+          <div class="task-grid" id="quarterlyGrid"></div>
+        </section>
+    </div>
+  </div>
+
+  <div class="row bottom">
+    <div class="col" style="flex:2;">
+      <section id="monthlySection">
+        <h2 class="section-heading" id="monthlyHeading"></h2>
+        <div class="task-grid" id="monthlyGrid"></div>
+      </section>
+    </div>
+    <div class="col" style="flex:1;">
+        <h2 class="section-heading" id="semiHeading"></h2>
+        <div class="task-grid" id="semiGrid"></div>
+    </div>
+  </div>
+
+  <section id="annualSection">
+    <h2 class="section-heading" id="annualHeading"></h2>
+    <div class="annual-cols">
+      <div class="annual-block" id="annualLeft"></div>
+      <div class="annual-block" id="annualRight"></div>
+    </div>
+  </section>
+
+</div>
+
+<script src="js/data2.js"></script>
+<script src="js/app-month.js"></script>
+</body>
+</html>
