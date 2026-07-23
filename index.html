@@ -90,10 +90,20 @@
           </section>
         </div>
       </div>
+
+      <div class="page-actions">
+        <button type="button" id="finalizeDataBtn" class="page-action-btn">
+          Finalize the data
+        </button>
+        <p id="finalizeStatus" class="page-action-status" aria-live="polite"></p>
+      </div>
     </div>
 
     <script src="js/content.js"></script>
     <script src="js/data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/env.js"></script>
+    <script src="js/finalize-data.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>

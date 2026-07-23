@@ -8,7 +8,7 @@
   const STORAGE_KEY = "TodoSchState";
 
   // { [checkboxId]: true|false }
-  let state = loadState();
+  let state = {};
   let currentTodoKey = "";
 
   function loadState() {
@@ -393,9 +393,29 @@
   // ---------------------------------------------------------
   // Init
   // ---------------------------------------------------------
-  function init() {
+  async function init() {
     const D = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
     currentTodoKey = D.todo_key;
+    state = loadState();
+
+    if (window.FinalizeData && typeof window.FinalizeData.loadPageState === "function") {
+      try {
+        const loggedState = await window.FinalizeData.loadPageState(currentTodoKey);
+        if (loggedState && typeof loggedState === "object") {
+          state = { ...state, ...loggedState };
+        } else if (
+          typeof window.FinalizeData.readLocalStorageState === "function"
+        ) {
+          state = {
+            ...state,
+            ...window.FinalizeData.readLocalStorageState(currentTodoKey),
+          };
+        }
+      } catch (e) {
+        console.warn("Could not load finalized state.", e);
+      }
+    }
+
     document.getElementById("mainTitle").textContent = D.title;
 
     renderDaily(D.daily);
@@ -435,6 +455,13 @@
     });
 
     renderAnnual(D.annual);
+
+    if (window.FinalizeData && typeof window.FinalizeData.attachFinalizeButton === "function") {
+      window.FinalizeData.attachFinalizeButton({
+        todoKey: currentTodoKey,
+        getState: () => state,
+      });
+    }
   }
 
   document.addEventListener("DOMContentLoaded", init);
