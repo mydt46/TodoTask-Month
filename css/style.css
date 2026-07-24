@@ -17,6 +17,43 @@ body {
   justify-content: center;
   padding: 40px 16px;
 }
+
+.update-alert {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 30px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.update-alert.success {
+  background: #eaf7ea;
+  border-color: #b7e4b8;
+  color: #2e7d32;
+}
+.update-alert.error {
+  background: #fdecea;
+  border-color: #f5b8b3;
+  color: #c0392b;
+}
+.update-alert.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .sheet {
   background: var(--paper);
   width: 1200px;

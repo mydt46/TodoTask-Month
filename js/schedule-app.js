@@ -12,6 +12,7 @@
 
   let state = {};
   let currentTodoKey = "";
+  let updateAlertTimer;
 
   function getElement(id) {
     return document.getElementById(id);
@@ -22,6 +23,25 @@
     if (className) element.className = className;
     if (text !== undefined) element.textContent = text;
     return element;
+  }
+
+  function showUpdateAlert(isSuccess) {
+    let alert = document.getElementById("updateAlert");
+    if (!alert) {
+      alert = createElement("div", "update-alert");
+      alert.id = "updateAlert";
+      alert.setAttribute("role", "status");
+      alert.setAttribute("aria-live", "polite");
+      document.body.appendChild(alert);
+    }
+
+    window.clearTimeout(updateAlertTimer);
+    alert.textContent = isSuccess ? "oke!!!" : "error!!!";
+    alert.className = `update-alert ${isSuccess ? "success" : "error"} show`;
+
+    updateAlertTimer = window.setTimeout(() => {
+      alert.classList.remove("show");
+    }, 1000);
   }
 
   function updateRow(rowGroup) {
@@ -138,12 +158,14 @@
 
               try {
                 await window.WeeklyData.updateIsDone(item.id, checkbox.checked);
+                showUpdateAlert(true);
               } catch (error) {
                 item.isDone = previousValue;
                 checkbox.checked = previousValue;
                 state[stateId] = previousValue;
                 updateRow(rowGroup);
                 console.error(`Could not update weekly row ${item.id}.`, error);
+                showUpdateAlert(false);
               } finally {
                 checkbox.disabled = false;
               }
@@ -345,12 +367,14 @@
 
           try {
             await window.TrackingData.updateTracking(trackingRow.id, tracking);
+            showUpdateAlert(true);
           } catch (error) {
             tracking[columnIndex] = previousValue;
             checkbox.checked = previousValue;
             state[stateId] = previousValue;
             updateRow(rowGroup);
             console.error(`Could not update tracking row ${trackingRow.id}.`, error);
+            showUpdateAlert(false);
           } finally {
             checkbox.disabled = false;
           }
@@ -464,6 +488,7 @@
               trackingRow.id,
               sourceTracking,
             );
+            showUpdateAlert(true);
           } catch (error) {
             sourceTracking[trackingIndex] = previousValue;
             checkbox.checked = previousValue;
@@ -473,6 +498,7 @@
               `Could not update following tracking row ${trackingRow.id}.`,
               error,
             );
+            showUpdateAlert(false);
           } finally {
             checkbox.disabled = false;
           }
@@ -571,12 +597,14 @@
 
           try {
             await window.TodoListData.updateIsDone(todo.id, checkbox.checked);
+            showUpdateAlert(true);
           } catch (error) {
             todo.isDone = previousValue;
             checkbox.checked = previousValue;
             state[stateId] = previousValue;
             updateRow(rowGroup);
             console.error(`Could not update todo row ${todo.id}.`, error);
+            showUpdateAlert(false);
           } finally {
             checkbox.disabled = false;
           }
