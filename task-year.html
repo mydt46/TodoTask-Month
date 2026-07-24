@@ -50,17 +50,17 @@
           </section>
         </div>
         <div class="col" style="flex: 1">
-          <h2 class="section-heading" id="semiHeading"></h2>
-          <div class="task-grid" id="semiGrid"></div>
+          <section id="quarterlySection">
+            <h2 class="section-heading" id="quarterlyHeading"></h2>
+            <div class="task-grid" id="quarterlyGrid"></div>
+          </section>
         </div>
       </div>
 
       <div class="row bottom">
         <div class="col" style="flex: 1">
-          <section id="quarterlySection">
-            <h2 class="section-heading" id="quarterlyHeading"></h2>
-            <div class="task-grid" id="quarterlyGrid"></div>
-          </section>
+          <h2 class="section-heading" id="semiHeading"></h2>
+          <div class="task-grid" id="semiGrid"></div>
         </div>
         <div class="col" style="flex: 2">
           <section id="annualSection">
@@ -79,6 +79,8 @@
     <!-- common -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/db/env-local.js"></script>
+    <script src="js/db/todo-list.js"></script>
+    <script src="js/db/tracking.js"></script>
     <script src="js/db/finalize-data.js"></script>
     <script src="js/schedule-app.js"></script>
   </body>

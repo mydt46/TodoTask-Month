@@ -97,6 +97,7 @@
     const combined = {
       todo_key: content.todo_key,
       title: content.title,
+      month: content.month,
     };
 
     Object.keys(config).forEach((sectionName) => {
@@ -307,15 +308,22 @@
     );
   }
 
-  function renderTrackingMonth(data, rows) {
-    const heading = getElement("trackingMonthHeading");
-    const grid = getElement("trackingMonthGrid");
+  function renderTrackingGrid(
+    data,
+    rows,
+    headingId,
+    gridId,
+    cellSize,
+    statePrefix,
+  ) {
+    const heading = getElement(headingId);
+    const grid = getElement(gridId);
     if (!heading || !grid) return;
 
     heading.textContent = data.heading;
     grid.replaceChildren();
 
-    const columns = `minmax(180px, 1fr) repeat(${data.columns.length}, 24px)`;
+    const columns = `minmax(180px, 1fr) repeat(${data.columns.length}, ${cellSize}px)`;
     const headerRow = createElement("div", "grid-row header-row");
     headerRow.style.gridTemplateColumns = columns;
     headerRow.appendChild(createElement("div"));
@@ -344,13 +352,14 @@
         checkbox.type = "checkbox";
         checkbox.checked = tracking[columnIndex];
         checkbox.style.background = data.cellColor;
-        rowGroup.ids.push(`${trackingRow.id}-${columnIndex}`);
-        state[`${trackingRow.id}-${columnIndex}`] = tracking[columnIndex];
+        const stateId = `${statePrefix}-${trackingRow.id}-${columnIndex}`;
+        rowGroup.ids.push(stateId);
+        state[stateId] = tracking[columnIndex];
 
         checkbox.addEventListener("change", async () => {
           const previousValue = tracking[columnIndex];
           tracking[columnIndex] = checkbox.checked;
-          state[`${trackingRow.id}-${columnIndex}`] = checkbox.checked;
+          state[stateId] = checkbox.checked;
           updateRow(rowGroup);
           checkbox.disabled = true;
 
@@ -359,7 +368,7 @@
           } catch (error) {
             tracking[columnIndex] = previousValue;
             checkbox.checked = previousValue;
-            state[`${trackingRow.id}-${columnIndex}`] = previousValue;
+            state[stateId] = previousValue;
             updateRow(rowGroup);
             console.error(`Could not update tracking row ${trackingRow.id}.`, error);
           } finally {
@@ -372,6 +381,17 @@
       grid.appendChild(row);
       updateRow(rowGroup);
     });
+  }
+
+  function renderTrackingMonth(data, rows) {
+    renderTrackingGrid(
+      data,
+      rows,
+      "trackingMonthHeading",
+      "trackingMonthGrid",
+      24,
+      "tracking-month",
+    );
   }
 
   function renderFollowingTracking(data, rows) {
@@ -521,14 +541,24 @@
     });
   }
 
-  function renderTodoRows(data, rows) {
-    const heading = getElement("dailyHeading");
+  function renderTodoRows(
+    data,
+    rows,
+    {
+      headingId = "dailyHeading",
+      leftId = "dailyLeft",
+      rightId = "dailyRight",
+      rowClass = "daily-row",
+      statePrefix = "todo",
+    } = {},
+  ) {
+    const heading = getElement(headingId);
     if (!heading) return;
     heading.textContent = data.heading;
 
     const columns = [
-      ["dailyLeft", rows.filter((row) => row.isLeft === true)],
-      ["dailyRight", rows.filter((row) => row.isLeft !== true)],
+      [leftId, rows.filter((row) => row.isLeft === true)],
+      [rightId, rows.filter((row) => row.isLeft !== true)],
     ];
 
     columns.forEach(([containerId, entries]) => {
@@ -537,12 +567,12 @@
       container.replaceChildren();
 
       entries.forEach((todo) => {
-        const row = createElement("div", "daily-row");
+        const row = createElement("div", rowClass);
         const badge = createElement("div", "letter-badge", todo.letter || "");
         badge.style.background = data.headerColor;
 
         const { lineElement, rowGroup } = createTaskLine(todo.title || "");
-        const stateId = `todo-${todo.id}`;
+        const stateId = `${statePrefix}-${todo.id}`;
         const checkbox = createElement("input", "cell-box");
         checkbox.type = "checkbox";
         checkbox.style.background = data.cellColor;
@@ -598,7 +628,6 @@
   async function init() {
     const data = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
     currentTodoKey = data.todo_key;
-    const currentMonth = Number(currentTodoKey.replace(/\D/g, ""));
     state = loadLocalState();
     await mergeFinalizedState();
 
@@ -611,7 +640,7 @@
         }
         const todoRows = data.daily.followingOnly
           ? await window.TodoListData.loadFollowing()
-          : await window.TodoListData.loadByMonth(currentMonth);
+          : await window.TodoListData.loadByMonth(data.month || 0);
         renderTodoRows(data.daily, todoRows);
       } catch (error) {
         console.error("Could not load todo data from Supabase.", error);
@@ -626,7 +655,7 @@
         }
         const weeklyRows = data.weekly.currentWeekOnly
           ? await window.WeeklyData.loadCurrentWeek()
-          : await window.WeeklyData.loadByMonth(currentMonth);
+          : await window.WeeklyData.loadByMonth(data.month || 0);
         data.weekly.weeks = groupWeeklyRows(weeklyRows);
         renderWeekly(data.weekly);
       } catch (error) {
@@ -641,6 +670,7 @@
         if (
           data[sectionName] &&
           sectionName !== "tracking_month" &&
+          data[sectionName].trackingMonth === undefined &&
           !(sectionName === "tracking" && data.tracking.followingOnly)
         ) {
           renderGridSection(
@@ -672,7 +702,7 @@
         if (!window.TrackingData) {
           throw new Error("Tracking data service is not loaded.");
         }
-        const trackingRows = await window.TrackingData.loadByMonth(currentMonth);
+        const trackingRows = await window.TrackingData.loadByMonth(data.month);
         renderTrackingMonth(data.tracking_month, trackingRows);
       } catch (error) {
         console.error("Could not load tracking data from Supabase.", error);
@@ -680,7 +710,71 @@
       }
     }
 
-    if (data.annual) {
+    const trackingGridSections = [
+      ["monthly", "monthlyHeading", "monthlyGrid", 28],
+      ["quarterly", "quarterlyHeading", "quarterlyGrid", 28],
+      ["semiAnnual", "semiHeading", "semiGrid", 32],
+    ];
+
+    for (const [
+      sectionName,
+      headingId,
+      gridId,
+      cellSize,
+    ] of trackingGridSections) {
+      const sectionData = data[sectionName];
+      if (sectionData?.trackingMonth === undefined) continue;
+
+      try {
+        if (!window.TrackingData) {
+          throw new Error("Tracking data service is not loaded.");
+        }
+        const rows = await window.TrackingData.loadByMonth(
+          sectionData.trackingMonth,
+        );
+        renderTrackingGrid(
+          sectionData,
+          rows,
+          headingId,
+          gridId,
+          cellSize,
+          sectionName,
+        );
+      } catch (error) {
+        console.error(`Could not load ${sectionName} data from Supabase.`, error);
+        renderTrackingGrid(
+          sectionData,
+          [],
+          headingId,
+          gridId,
+          cellSize,
+          sectionName,
+        );
+      }
+    }
+
+    if (data.annual?.todoMonth !== undefined) {
+      const annualOptions = {
+        headingId: "annualHeading",
+        leftId: "annualLeft",
+        rightId: "annualRight",
+        rowClass: "annual-row",
+        statePrefix: "annual-todo",
+      };
+
+      try {
+        if (!window.TodoListData) {
+          throw new Error("Todo list data service is not loaded.");
+        }
+        const annualRows = await window.TodoListData.loadByMonth(
+          data.annual.todoMonth,
+        );
+        renderTodoRows(data.annual, annualRows, annualOptions);
+      } catch (error) {
+        console.error("Could not load annual data from Supabase.", error);
+        renderTodoRows(data.annual, [], annualOptions);
+      }
+    } else if (data.annual) {
       renderTwoColumnSection(data.annual, {
         headingId: "annualHeading",
         leftId: "annualLeft",

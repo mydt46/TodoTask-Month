@@ -6,39 +6,27 @@
 const SCHEDULE_CONTENT = {
   todo_key: "y26",
   title: "Year 2026",
+  month: 0,
   daily: {
-    left: [
-      { letter: "D1", text: "Dọn dẹp chỗ ngủ" },
-      { letter: "D1", text: "Quét dọn phòng ngủ" },
-      { letter: "D1", text: "Lau bàn làm việc" },
-    ],
-    right: [
-      { letter: "!1", text: "Dọn dẹp bếp" },
-      { letter: "!1", text: "Lau nhà" },
-      { letter: "!2", text: "Giặt đồ lau" },
-      { letter: "!2", text: "Giặt chăn ga" },
-      { letter: "!2", text: "Loại bỏ bớt giấy cũ" },
-      { letter: "!2", text: "Giặt pad chuột" },
-      { letter: "!2", text: "Giặt giày" },
-    ],
+    left: [],
+    right: [],
   },
   // ============== monthly
   monthly: {
-    items: [
-      "[BẾP] Tủ lạnh",
-      "[GÁC] Quét Dọn (Sắp xếp + bỏ bớt đồ để lâu)",
-      "[Lầu 2] Dọn hồ cá",
-      "[Lầu 1] Giặt khăn lau",
-    ],
+    trackingMonth: 0,
+    items: [],
   },
   quarterly: {
+    trackingMonth: -1,
     items: ["Lau cửa kính", "Tổng VS Bếp", ""],
   },
   // ============== annual
   semiAnnual: {
+    trackingMonth: -2,
     items: ["VS máy giặt", "", ""],
   },
   annual: {
+    todoMonth: -1,
     left: [
       { letter: "J", text: "" },
       { letter: "F", text: "" },
