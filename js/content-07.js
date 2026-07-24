@@ -6,29 +6,25 @@
 const SCHEDULE_CONTENT = {
   todo_key: "m7",
   title: "TODO Th07",
-  // ============== tracking
-  tracking_month: {
-    items: [
-      "Đọc sách",
-      "Học từ vựng tiếng anh",
-      "English Reading",
-      "English Grammar",
-    ],
-  },
   daily: {
     left: [
-      { letter: "D1", text: "Dọn dẹp chỗ ngủ" },
-      { letter: "D1", text: "Quét dọn phòng ngủ" },
-      { letter: "D1", text: "Lau bàn làm việc" },
+      { letter: "G1", text: "Hoàn thành todo web" },
+      { letter: "G2", text: "Duy trì dọn dẹp" },
+      { letter: "G3", text: "" },
     ],
     right: [
       { letter: "!1", text: "Dọn dẹp bếp" },
-      { letter: "!1", text: "Lau nhà" },
-      { letter: "!2", text: "Giặt đồ lau" },
-      { letter: "!2", text: "Giặt chăn ga" },
-      { letter: "!2", text: "Loại bỏ bớt giấy cũ" },
-      { letter: "!2", text: "Giặt pad chuột" },
-      { letter: "!2", text: "Giặt giày" },
+      { letter: "!2", text: "Lau nhà" },
+      { letter: "!3", text: "Giặt đồ lau" },
+      { letter: "!4", text: "Giặt chăn ga" },
+      { letter: "!5", text: "Loại bỏ bớt giấy cũ" },
+      { letter: "!6", text: "Giặt pad chuột" },
+      { letter: "!7", text: "Giặt giày" },
+    ],
+  },
+  // ============== tracking
+  tracking_month: {
+    items: [
     ],
   },
   // ============== weekly
@@ -38,30 +34,22 @@ const SCHEDULE_CONTENT = {
         items: [
           [""],
           [""],
-          ["[P.Ngủ] Dọn dẹp các vật dụng", ""],
-          [
-            "[Bếp] Dọn dẹp các vật dụng(sắp xếp + lau + bỏ)",
-            "[Bếp] Lau khu vực",
-            "[P.Ngủ] Giặt chăn ga",
-          ],
-          ["[Lầu 1] Quét + lau", "[Lầu 2] Quét + lau", "[X] Giặt khăn lau"],
-          ["[X]Giặt Pad chuột", "[X]Giặt giày", ""],
-          ["[x]Loại bớt giấy cũ", "[Lầu 2]VS hồ cá", ""],
+          [""],
+          [""],
+          [""],
+          [""],
+          [""],
         ],
       },
       {
         items: [
           [""],
           [""],
-          ["[P.Ngủ] Dọn dẹp các vật dụng", ""],
-          [
-            "[Bếp] Dọn dẹp các vật dụng(sắp xếp + lau + bỏ)",
-            "[Bếp] Lau khu vực",
-            "[P.Ngủ] Giặt chăn ga",
-          ],
-          ["[Lầu 1] Quét + lau", "[Lầu 2] Quét + lau", "[X] Giặt khăn lau"],
-          ["[X]Giặt Pad chuột", "[X]Giặt giày", ""],
-          ["[x]Loại bớt giấy cũ", "[Lầu 2]VS hồ cá", ""],
+          [""],
+          [""],
+          [""],
+          [""],
+          [""],
         ],
       },
       {

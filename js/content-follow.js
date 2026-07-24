@@ -17,9 +17,9 @@ const SCHEDULE_CONTENT = {
   },
   daily: {
     left: [
-      { letter: "D1", text: "Dọn dẹp chỗ ngủ" },
-      { letter: "D1", text: "Quét dọn phòng ngủ" },
-      { letter: "D1", text: "Lau bàn làm việc" },
+      { letter: "G1", text: "" },
+      { letter: "G1", text: "" },
+      { letter: "G1", text: "" },
     ],
     right: [
       { letter: "!1", text: "Dọn dẹp bếp" },

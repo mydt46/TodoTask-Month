@@ -1,0 +1,32 @@
+(function () {
+  "use strict";
+
+  function getTrackingTable() {
+    const env = window.TODO_ENV;
+    if (!env?.supabase) {
+      throw new Error("Missing Supabase configuration.");
+    }
+
+    return env.supabase.schema(env.schema || "public").from("tracking");
+  }
+
+  async function loadByMonth(month) {
+    const { data, error } = await getTrackingTable()
+      .select("id,title,month,tracking")
+      .eq("month", month)
+      .order("id", { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function updateTracking(id, tracking) {
+    const { error } = await getTrackingTable()
+      .update({ tracking })
+      .eq("id", id);
+
+    if (error) throw error;
+  }
+
+  window.TrackingData = { loadByMonth, updateTracking };
+})();

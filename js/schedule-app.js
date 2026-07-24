@@ -240,6 +240,89 @@
     });
   }
 
+  function normalizeTracking(value, columnCount) {
+    let tracking = value;
+    if (typeof tracking === "string") {
+      try {
+        tracking = JSON.parse(tracking);
+      } catch (error) {
+        tracking = [];
+      }
+    }
+
+    return Array.from(
+      { length: columnCount },
+      (unused, index) => Boolean(Array.isArray(tracking) && tracking[index]),
+    );
+  }
+
+  function renderTrackingMonth(data, rows) {
+    const heading = getElement("trackingMonthHeading");
+    const grid = getElement("trackingMonthGrid");
+    if (!heading || !grid) return;
+
+    heading.textContent = data.heading;
+    grid.replaceChildren();
+
+    const columns = `minmax(180px, 1fr) repeat(${data.columns.length}, 24px)`;
+    const headerRow = createElement("div", "grid-row header-row");
+    headerRow.style.gridTemplateColumns = columns;
+    headerRow.appendChild(createElement("div"));
+    data.columns.forEach((label) => {
+      const header = createElement("div", "hcell", label);
+      header.style.background = data.headerColor;
+      headerRow.appendChild(header);
+    });
+    grid.appendChild(headerRow);
+
+    rows.forEach((trackingRow) => {
+      const tracking = normalizeTracking(
+        trackingRow.tracking,
+        data.columns.length,
+      );
+      const row = createElement("div", "grid-row data-row");
+      row.style.gridTemplateColumns = columns;
+
+      const labelCell = createElement("div", "task-row-label");
+      const { lineElement, rowGroup } = createTaskLine(trackingRow.title || "");
+      labelCell.appendChild(lineElement);
+      row.appendChild(labelCell);
+
+      data.columns.forEach((unused, columnIndex) => {
+        const checkbox = createElement("input", "cell-box");
+        checkbox.type = "checkbox";
+        checkbox.checked = tracking[columnIndex];
+        checkbox.style.background = data.cellColor;
+        rowGroup.ids.push(`${trackingRow.id}-${columnIndex}`);
+        state[`${trackingRow.id}-${columnIndex}`] = tracking[columnIndex];
+
+        checkbox.addEventListener("change", async () => {
+          const previousValue = tracking[columnIndex];
+          tracking[columnIndex] = checkbox.checked;
+          state[`${trackingRow.id}-${columnIndex}`] = checkbox.checked;
+          updateRow(rowGroup);
+          checkbox.disabled = true;
+
+          try {
+            await window.TrackingData.updateTracking(trackingRow.id, tracking);
+          } catch (error) {
+            tracking[columnIndex] = previousValue;
+            checkbox.checked = previousValue;
+            state[`${trackingRow.id}-${columnIndex}`] = previousValue;
+            updateRow(rowGroup);
+            console.error(`Could not update tracking row ${trackingRow.id}.`, error);
+          } finally {
+            checkbox.disabled = false;
+          }
+        });
+        row.appendChild(checkbox);
+      });
+
+      grid.appendChild(row);
+      updateRow(rowGroup);
+    });
+  }
+
   function renderTwoColumnSection(data, options) {
     const heading = getElement(options.headingId);
     if (!heading) return;
@@ -313,7 +396,7 @@
 
     GRID_SECTIONS.forEach(
       ([sectionName, prefix, headingId, gridId, cellSize]) => {
-        if (data[sectionName]) {
+        if (data[sectionName] && sectionName !== "tracking_month") {
           renderGridSection(
             data[sectionName],
             prefix,
@@ -324,6 +407,20 @@
         }
       },
     );
+
+    if (data.tracking_month) {
+      try {
+        if (!window.TrackingData) {
+          throw new Error("Tracking data service is not loaded.");
+        }
+        const month = Number(currentTodoKey.replace(/\D/g, ""));
+        const trackingRows = await window.TrackingData.loadByMonth(month);
+        renderTrackingMonth(data.tracking_month, trackingRows);
+      } catch (error) {
+        console.error("Could not load tracking data from Supabase.", error);
+        renderTrackingMonth(data.tracking_month, []);
+      }
+    }
 
     if (data.annual) {
       renderTwoColumnSection(data.annual, {
