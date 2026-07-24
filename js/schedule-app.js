@@ -131,16 +131,50 @@
       const row = createElement("tr");
       data.days.forEach((day, dayIndex) => {
         const cell = createElement("td", "item");
-        const text = day.items[itemIndex] || "";
+        const item = day.items[itemIndex] || "";
+        const isDatabaseItem =
+          item && typeof item === "object" && item.id !== undefined;
+        const text = isDatabaseItem ? item.title || "" : item;
 
         if (text) {
           const { lineElement, rowGroup } = createTaskLine(text);
-          const weekIdPart = weekCount > 1 ? `w-${weekIndex}` : "w";
-          const checkbox = createCheckbox({
-            id: `${currentTodoKey}-${weekIdPart}-${dayIndex}-${itemIndex}`,
-            className: "chk",
-            rowGroup,
-          });
+          let checkbox;
+
+          if (isDatabaseItem) {
+            const stateId = `weekly-${item.id}`;
+            state[stateId] = Boolean(item.isDone);
+            rowGroup.ids.push(stateId);
+            checkbox = createElement("input", "chk");
+            checkbox.type = "checkbox";
+            checkbox.checked = Boolean(item.isDone);
+            checkbox.dataset.id = item.id;
+            checkbox.addEventListener("change", async () => {
+              const previousValue = Boolean(item.isDone);
+              item.isDone = checkbox.checked;
+              state[stateId] = checkbox.checked;
+              updateRow(rowGroup);
+              checkbox.disabled = true;
+
+              try {
+                await window.WeeklyData.updateIsDone(item.id, checkbox.checked);
+              } catch (error) {
+                item.isDone = previousValue;
+                checkbox.checked = previousValue;
+                state[stateId] = previousValue;
+                updateRow(rowGroup);
+                console.error(`Could not update weekly row ${item.id}.`, error);
+              } finally {
+                checkbox.disabled = false;
+              }
+            });
+          } else {
+            const weekIdPart = weekCount > 1 ? `w-${weekIndex}` : "w";
+            checkbox = createCheckbox({
+              id: `${currentTodoKey}-${weekIdPart}-${dayIndex}-${itemIndex}`,
+              className: "chk",
+              rowGroup,
+            });
+          }
           lineElement.prepend(checkbox);
           cell.appendChild(lineElement);
           updateRow(rowGroup);
@@ -195,6 +229,23 @@
       );
     }
     section.appendChild(weeklyList);
+  }
+
+  function groupWeeklyRows(rows) {
+    const weekNumbers = [...new Set(rows.map((row) => Number(row.week)))]
+      .filter((week) => Number.isInteger(week))
+      .sort((left, right) => left - right);
+
+    return weekNumbers.map((week) => ({
+      days: Array.from({ length: 7 }, (unused, dayOfWeek) => ({
+        ...SCHEDULE_DATA.weekly.days[dayOfWeek],
+        items: rows.filter(
+          (row) =>
+            Number(row.week) === week &&
+            Number(row.dayOfWeek) === dayOfWeek,
+        ),
+      })),
+    }));
   }
 
   function renderGridSection(data, idPrefix, headingId, gridId, cellSize) {
@@ -323,6 +374,117 @@
     });
   }
 
+  function renderFollowingTracking(data, rows) {
+    const heading = getElement("trackingHeading");
+    const grid = getElement("trackingGrid");
+    if (!heading || !grid) return;
+
+    heading.textContent = data.heading;
+    grid.replaceChildren();
+
+    const columns = `minmax(180px, 1fr) repeat(${data.columns.length}, 28px)`;
+    const headerRow = createElement("div", "grid-row header-row");
+    headerRow.style.gridTemplateColumns = columns;
+    headerRow.appendChild(createElement("div"));
+    data.columns.forEach((label) => {
+      const header = createElement("div", "hcell", label);
+      header.style.background = data.headerColor;
+      headerRow.appendChild(header);
+    });
+    grid.appendChild(headerRow);
+
+    rows.forEach((trackingRow) => {
+      const start = Math.max(0, Number(trackingRow.startFollowing) || 0);
+      const quantity = Math.min(
+        data.columns.length,
+        Math.max(0, Number(trackingRow.qtyFollowing) || 0),
+      );
+      let rawTracking = trackingRow.tracking;
+      if (typeof rawTracking === "string") {
+        try {
+          rawTracking = JSON.parse(rawTracking);
+        } catch (error) {
+          rawTracking = [];
+        }
+      }
+      const sourceTracking = Array.isArray(rawTracking)
+        ? rawTracking.map(Boolean)
+        : [];
+      while (sourceTracking.length < start + quantity) {
+        sourceTracking.push(false);
+      }
+      const leadingDisabled =
+        quantity < data.columns.length && start < 10
+          ? data.columns.length - quantity
+          : 0;
+
+      const row = createElement("div", "grid-row data-row");
+      row.style.gridTemplateColumns = columns;
+      const labelCell = createElement("div", "task-row-label");
+      const { lineElement, rowGroup } = createTaskLine(trackingRow.title || "");
+      labelCell.appendChild(lineElement);
+      row.appendChild(labelCell);
+
+      data.columns.forEach((unused, columnIndex) => {
+        const relativeIndex = columnIndex - leadingDisabled;
+        const isMissing =
+          relativeIndex < 0 ||
+          relativeIndex >= quantity ||
+          (quantity < data.columns.length &&
+            start > 20 &&
+            columnIndex >= quantity);
+        const checkbox = createElement("input", "cell-box");
+        checkbox.type = "checkbox";
+        checkbox.style.background = data.cellColor;
+
+        if (isMissing) {
+          checkbox.disabled = true;
+          checkbox.style.opacity = "0.5";
+          row.appendChild(checkbox);
+          return;
+        }
+
+        const trackingIndex = start + relativeIndex;
+        const stateId = `following-${trackingRow.id}-${trackingIndex}`;
+        checkbox.checked = Boolean(sourceTracking[trackingIndex]);
+        checkbox.dataset.id = trackingRow.id;
+        checkbox.dataset.trackingIndex = trackingIndex;
+        rowGroup.ids.push(stateId);
+        state[stateId] = checkbox.checked;
+
+        checkbox.addEventListener("change", async () => {
+          const previousValue = sourceTracking[trackingIndex];
+          sourceTracking[trackingIndex] = checkbox.checked;
+          state[stateId] = checkbox.checked;
+          updateRow(rowGroup);
+          checkbox.disabled = true;
+
+          try {
+            await window.TrackingData.updateTracking(
+              trackingRow.id,
+              sourceTracking,
+            );
+          } catch (error) {
+            sourceTracking[trackingIndex] = previousValue;
+            checkbox.checked = previousValue;
+            state[stateId] = previousValue;
+            updateRow(rowGroup);
+            console.error(
+              `Could not update following tracking row ${trackingRow.id}.`,
+              error,
+            );
+          } finally {
+            checkbox.disabled = false;
+          }
+        });
+        row.appendChild(checkbox);
+      });
+
+      grid.appendChild(row);
+      updateRow(rowGroup);
+    });
+  }
+
   function renderTwoColumnSection(data, options) {
     const heading = getElement(options.headingId);
     if (!heading) return;
@@ -376,6 +538,7 @@
   async function init() {
     const data = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
     currentTodoKey = data.todo_key;
+    const currentMonth = Number(currentTodoKey.replace(/\D/g, ""));
     state = loadLocalState();
     await mergeFinalizedState();
 
@@ -392,11 +555,30 @@
       });
     }
 
-    if (data.weekly) renderWeekly(data.weekly);
+    if (data.weekly) {
+      try {
+        if (!window.WeeklyData) {
+          throw new Error("Weekly data service is not loaded.");
+        }
+        const weeklyRows = data.weekly.currentWeekOnly
+          ? await window.WeeklyData.loadCurrentWeek()
+          : await window.WeeklyData.loadByMonth(currentMonth);
+        data.weekly.weeks = groupWeeklyRows(weeklyRows);
+        renderWeekly(data.weekly);
+      } catch (error) {
+        console.error("Could not load weekly data from Supabase.", error);
+        data.weekly.weeks = [];
+        renderWeekly(data.weekly);
+      }
+    }
 
     GRID_SECTIONS.forEach(
       ([sectionName, prefix, headingId, gridId, cellSize]) => {
-        if (data[sectionName] && sectionName !== "tracking_month") {
+        if (
+          data[sectionName] &&
+          sectionName !== "tracking_month" &&
+          !(sectionName === "tracking" && data.tracking.followingOnly)
+        ) {
           renderGridSection(
             data[sectionName],
             prefix,
@@ -408,13 +590,25 @@
       },
     );
 
+    if (data.tracking?.followingOnly) {
+      try {
+        if (!window.TrackingData) {
+          throw new Error("Tracking data service is not loaded.");
+        }
+        const followingRows = await window.TrackingData.loadFollowing();
+        renderFollowingTracking(data.tracking, followingRows);
+      } catch (error) {
+        console.error("Could not load following tracking data.", error);
+        renderFollowingTracking(data.tracking, []);
+      }
+    }
+
     if (data.tracking_month) {
       try {
         if (!window.TrackingData) {
           throw new Error("Tracking data service is not loaded.");
         }
-        const month = Number(currentTodoKey.replace(/\D/g, ""));
-        const trackingRows = await window.TrackingData.loadByMonth(month);
+        const trackingRows = await window.TrackingData.loadByMonth(currentMonth);
         renderTrackingMonth(data.tracking_month, trackingRows);
       } catch (error) {
         console.error("Could not load tracking data from Supabase.", error);

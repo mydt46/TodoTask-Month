@@ -20,6 +20,16 @@
     return data || [];
   }
 
+  async function loadFollowing() {
+    const { data, error } = await getTrackingTable()
+      .select("id,title,month,tracking,startFollowing,qtyFollowing")
+      .gt("qtyFollowing", 0)
+      .order("id", { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  }
+
   async function updateTracking(id, tracking) {
     const { error } = await getTrackingTable()
       .update({ tracking })
@@ -28,5 +38,5 @@
     if (error) throw error;
   }
 
-  window.TrackingData = { loadByMonth, updateTracking };
+  window.TrackingData = { loadByMonth, loadFollowing, updateTracking };
 })();
