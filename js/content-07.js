@@ -7,7 +7,7 @@ const SCHEDULE_CONTENT = {
   todo_key: "m7",
   title: "TODO Th07",
   // ============== tracking
-  tracking: {
+  tracking_month: {
     items: [
       "Đọc sách",
       "Học từ vựng tiếng anh",

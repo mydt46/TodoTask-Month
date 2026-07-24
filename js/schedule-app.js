@@ -5,6 +5,7 @@
   const STORAGE_KEY = "TodoSchState";
   const GRID_SECTIONS = [
     ["tracking", "t", "trackingHeading", "trackingGrid", 28],
+    ["tracking_month", "tm", "trackingMonthHeading", "trackingMonthGrid", 24],
     ["monthly", "m", "monthlyHeading", "monthlyGrid", 28],
     ["quarterly", "q", "quarterlyHeading", "quarterlyGrid", 28],
     ["semiAnnual", "s", "semiHeading", "semiGrid", 32],

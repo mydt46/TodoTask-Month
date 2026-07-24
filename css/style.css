@@ -237,6 +237,12 @@ table.weekly td.item {
   align-items: center;
   column-gap: 8px;
 }
+#trackingMonthGrid .grid-row {
+  display: grid;
+  align-items: center;
+  column-gap: 4px;
+}
+
 .grid-row.data-row {
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
