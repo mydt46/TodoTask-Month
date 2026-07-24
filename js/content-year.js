@@ -18,30 +18,16 @@ const SCHEDULE_CONTENT = {
   },
   quarterly: {
     trackingMonth: -1,
-    items: ["Lau cửa kính", "Tổng VS Bếp", ""],
+    items: [],
   },
   // ============== annual
   semiAnnual: {
     trackingMonth: -2,
-    items: ["VS máy giặt", "", ""],
+    items: [],
   },
   annual: {
     todoMonth: -1,
-    left: [
-      { letter: "J", text: "" },
-      { letter: "F", text: "" },
-      { letter: "M", text: "" },
-      { letter: "A", text: "" },
-      { letter: "M", text: "" },
-      { letter: "J", text: "" },
-    ],
-    right: [
-      { letter: "J", text: "" },
-      { letter: "A", text: "" },
-      { letter: "S", text: "" },
-      { letter: "O", text: "" },
-      { letter: "N", text: "" },
-      { letter: "D", text: "" },
-    ],
+    left: [],
+    right: [],
   },
 };

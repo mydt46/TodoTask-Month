@@ -25,46 +25,6 @@ body {
   border-radius: 4px;
 }
 
-.page-actions {
-  margin-top: 36px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.page-action-btn {
-  border: 1px solid #1f2328;
-  background: #1f2328;
-  color: #fff;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.page-action-btn:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-}
-
-.page-action-btn:disabled {
-  cursor: wait;
-  opacity: 0.7;
-  transform: none;
-}
-
-.page-action-status {
-  margin: 0;
-  min-height: 20px;
-  font-size: 13px;
-  color: var(--sub);
-  text-align: right;
-}
-
 /* ---------- Title ---------- */
 .title-row {
   text-align: center;
@@ -359,11 +319,5 @@ table.weekly td.item {
   }
   .title-row h1 {
     font-size: 38px;
-  }
-  .page-actions {
-    align-items: stretch;
-  }
-  .page-action-status {
-    text-align: left;
   }
 }

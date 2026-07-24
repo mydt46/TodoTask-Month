@@ -2,7 +2,6 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "TodoSchState";
   const GRID_SECTIONS = [
     ["tracking", "t", "trackingHeading", "trackingGrid", 28],
     ["tracking_month", "tm", "trackingMonthHeading", "trackingMonthGrid", 24],
@@ -23,24 +22,6 @@
     if (className) element.className = className;
     if (text !== undefined) element.textContent = text;
     return element;
-  }
-
-  function loadLocalState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (error) {
-      console.warn("Could not read saved state, starting fresh.", error);
-      return {};
-    }
-  }
-
-  function saveLocalState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.warn("Could not save state.", error);
-    }
   }
 
   function updateRow(rowGroup) {
@@ -71,7 +52,6 @@
     rowGroup.ids.push(id);
     checkbox.addEventListener("change", () => {
       state[id] = checkbox.checked;
-      saveLocalState();
       updateRow(rowGroup);
     });
     return checkbox;
@@ -611,25 +591,9 @@
     });
   }
 
-  async function mergeFinalizedState() {
-    if (!getElement("finalizeDataBtn") || !window.FinalizeData?.loadPageState) {
-      return;
-    }
-    try {
-      const finalizedState = await window.FinalizeData.loadPageState(currentTodoKey);
-      if (finalizedState && typeof finalizedState === "object") {
-        state = { ...state, ...finalizedState };
-      }
-    } catch (error) {
-      console.warn("Could not load finalized state.", error);
-    }
-  }
-
   async function init() {
     const data = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
     currentTodoKey = data.todo_key;
-    state = loadLocalState();
-    await mergeFinalizedState();
 
     getElement("mainTitle").textContent = data.title;
 
@@ -785,10 +749,6 @@
       });
     }
 
-    window.FinalizeData?.attachFinalizeButton?.({
-      todoKey: currentTodoKey,
-      getState: () => state,
-    });
   }
 
   document.addEventListener("DOMContentLoaded", init);
