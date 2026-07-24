@@ -12,20 +12,9 @@ const SCHEDULE_CONTENT = {
     items: [],
   },
   daily: {
-    left: [
-      { letter: "G1", text: "" },
-      { letter: "G1", text: "" },
-      { letter: "G1", text: "" },
-    ],
-    right: [
-      { letter: "!1", text: "Dọn dẹp bếp" },
-      { letter: "!1", text: "Lau nhà" },
-      { letter: "!2", text: "Giặt đồ lau" },
-      { letter: "!2", text: "Giặt chăn ga" },
-      { letter: "!2", text: "Loại bỏ bớt giấy cũ" },
-      { letter: "!2", text: "Giặt pad chuột" },
-      { letter: "!2", text: "Giặt giày" },
-    ],
+    followingOnly: true,
+    left: [],
+    right: [],
   },
   // ============== weekly
   weekly: {

@@ -521,6 +521,66 @@
     });
   }
 
+  function renderTodoRows(data, rows) {
+    const heading = getElement("dailyHeading");
+    if (!heading) return;
+    heading.textContent = data.heading;
+
+    const columns = [
+      ["dailyLeft", rows.filter((row) => row.isLeft === true)],
+      ["dailyRight", rows.filter((row) => row.isLeft !== true)],
+    ];
+
+    columns.forEach(([containerId, entries]) => {
+      const container = getElement(containerId);
+      if (!container) return;
+      container.replaceChildren();
+
+      entries.forEach((todo) => {
+        const row = createElement("div", "daily-row");
+        const badge = createElement("div", "letter-badge", todo.letter || "");
+        badge.style.background = data.headerColor;
+
+        const { lineElement, rowGroup } = createTaskLine(todo.title || "");
+        const stateId = `todo-${todo.id}`;
+        const checkbox = createElement("input", "cell-box");
+        checkbox.type = "checkbox";
+        checkbox.style.background = data.cellColor;
+        checkbox.checked = Boolean(todo.isDone);
+        checkbox.dataset.id = todo.id;
+        lineElement.style.flex = "1";
+        rowGroup.ids.push(stateId);
+        state[stateId] = checkbox.checked;
+
+        checkbox.addEventListener("change", async () => {
+          const previousValue = Boolean(todo.isDone);
+          todo.isDone = checkbox.checked;
+          state[stateId] = checkbox.checked;
+          updateRow(rowGroup);
+          checkbox.disabled = true;
+
+          try {
+            await window.TodoListData.updateIsDone(todo.id, checkbox.checked);
+          } catch (error) {
+            todo.isDone = previousValue;
+            checkbox.checked = previousValue;
+            state[stateId] = previousValue;
+            updateRow(rowGroup);
+            console.error(`Could not update todo row ${todo.id}.`, error);
+          } finally {
+            checkbox.disabled = false;
+          }
+        });
+
+        row.appendChild(badge);
+        row.appendChild(lineElement);
+        row.appendChild(checkbox);
+        container.appendChild(row);
+        updateRow(rowGroup);
+      });
+    });
+  }
+
   async function mergeFinalizedState() {
     if (!getElement("finalizeDataBtn") || !window.FinalizeData?.loadPageState) {
       return;
@@ -545,14 +605,18 @@
     getElement("mainTitle").textContent = data.title;
 
     if (data.daily) {
-      renderTwoColumnSection(data.daily, {
-        headingId: "dailyHeading",
-        leftId: "dailyLeft",
-        rightId: "dailyRight",
-        leftPrefix: "dl",
-        rightPrefix: "dr",
-        rowClass: "daily-row",
-      });
+      try {
+        if (!window.TodoListData) {
+          throw new Error("Todo list data service is not loaded.");
+        }
+        const todoRows = data.daily.followingOnly
+          ? await window.TodoListData.loadFollowing()
+          : await window.TodoListData.loadByMonth(currentMonth);
+        renderTodoRows(data.daily, todoRows);
+      } catch (error) {
+        console.error("Could not load todo data from Supabase.", error);
+        renderTodoRows(data.daily, []);
+      }
     }
 
     if (data.weekly) {
