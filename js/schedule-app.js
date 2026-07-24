@@ -107,23 +107,18 @@
     });
 
     if (combined.weekly) {
-      combined.weekly.days = config.weekly.days.map((day, index) => ({
-        ...day,
-        items: content.weekly.items[index] || [],
+      combined.weekly.weeks = content.weekly.weeks.map((week) => ({
+        days: config.weekly.days.map((day, dayIndex) => ({
+          ...day,
+          items: week.items[dayIndex] || [],
+        })),
       }));
-      delete combined.weekly.items;
     }
 
     return combined;
   }
 
-  function renderWeekly(data) {
-    const heading = getElement("weeklyHeading");
-    const headerRow = getElement("weeklyHeaderRow");
-    const body = getElement("weeklyCategoryRow");
-    if (!heading || !headerRow || !body) return;
-
-    heading.textContent = data.heading;
+  function renderWeeklyTable(data, headerRow, body, weekIndex, weekCount) {
     data.days.forEach((day) => {
       const header = createElement("th", "", day.day);
       header.style.background = day.color;
@@ -139,8 +134,9 @@
 
         if (text) {
           const { lineElement, rowGroup } = createTaskLine(text);
+          const weekIdPart = weekCount > 1 ? `w-${weekIndex}` : "w";
           const checkbox = createCheckbox({
-            id: `${currentTodoKey}-w-${dayIndex}-${itemIndex}`,
+            id: `${currentTodoKey}-${weekIdPart}-${dayIndex}-${itemIndex}`,
             className: "chk",
             rowGroup,
           });
@@ -152,6 +148,52 @@
       });
       body.appendChild(row);
     }
+  }
+
+  function createWeeklyTable() {
+    const table = createElement("table", "weekly");
+    const tableHead = createElement("thead");
+    const headerRow = createElement("tr");
+    const body = createElement("tbody");
+    tableHead.appendChild(headerRow);
+    table.appendChild(tableHead);
+    table.appendChild(body);
+    return { table, headerRow, body };
+  }
+
+  function renderWeekly(data) {
+    const section = getElement("weeklySection");
+    const heading = getElement("weeklyHeading");
+    if (!section || !heading) return;
+
+    heading.textContent = data.heading;
+    const weekCount = data.weeks.length;
+
+    if (weekCount === 1) {
+      const headerRow = getElement("weeklyHeaderRow");
+      const body = getElement("weeklyCategoryRow");
+      if (headerRow && body) {
+        renderWeeklyTable(data.weeks[0], headerRow, body, 1, weekCount);
+      }
+      return;
+    }
+
+    section.querySelector("table.weekly")?.remove();
+    const weeklyList = createElement("div", "weekly-list");
+    for (let weekIndex = 1; weekIndex <= weekCount; weekIndex += 1) {
+      const weekBlock = createElement("div", "weekly-block");
+      const { table, headerRow, body } = createWeeklyTable();
+      weekBlock.appendChild(table);
+      weeklyList.appendChild(weekBlock);
+      renderWeeklyTable(
+        data.weeks[weekIndex - 1],
+        headerRow,
+        body,
+        weekIndex,
+        weekCount,
+      );
+    }
+    section.appendChild(weeklyList);
   }
 
   function renderGridSection(data, idPrefix, headingId, gridId, cellSize) {

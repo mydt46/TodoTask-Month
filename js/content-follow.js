@@ -33,19 +33,23 @@ const SCHEDULE_CONTENT = {
   },
   // ============== weekly
   weekly: {
-    items: [
-      [""],
-      [""],
-      ["[P.Ngủ] Dọn dẹp các vật dụng", ""],
-      [
-        "[Bếp] Dọn dẹp các vật dụng(sắp xếp + lau + bỏ)",
-        "[Bếp] Lau khu vực",
-        "[P.Ngủ] Giặt chăn ga",
-        "",
-      ],
-      ["[Lầu 1] Quét + lau", "[Lầu 2] Quét + lau", "[X] Giặt khăn lau"],
-      ["[X]Giặt Pad chuột", "[X]Giặt giày", ""],
-      ["[x]Loại bớt giấy cũ", "[Lầu 2]VS hồ cá", "", ""],
-    ],
+    weeks: [
+      {
+        items: [
+          [""],
+          [""],
+          ["[P.Ngủ] Dọn dẹp các vật dụng", ""],
+          [
+            "[Bếp] Dọn dẹp các vật dụng(sắp xếp + lau + bỏ)",
+            "[Bếp] Lau khu vực",
+            "[P.Ngủ] Giặt chăn ga",
+            "",
+          ],
+          ["[Lầu 1] Quét + lau", "[Lầu 2] Quét + lau", "[X] Giặt khăn lau"],
+          ["[X]Giặt Pad chuột", "[X]Giặt giày", ""],
+          ["[x]Loại bớt giấy cũ", "[Lầu 2]VS hồ cá", "", ""],
+        ],
+      }
+    ]
   }
 };

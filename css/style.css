@@ -166,6 +166,11 @@ table.weekly td.item {
   height: 26px;
 }
 
+.weekly-list {
+  display: grid;
+  gap: 0px;
+}
+
 .task-line {
   display: flex;
   align-items: flex-start;
