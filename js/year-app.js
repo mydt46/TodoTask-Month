@@ -86,17 +86,6 @@
         left: content.daily.left,
         right: content.daily.right,
       },
-      weekly: {
-        ...config.weekly,
-        days: config.weekly.days.map((day, index) => ({
-          ...day,
-          items: content.weekly.items[index] || [],
-        })),
-      },
-      tracking: {
-        ...config.tracking,
-        items: content.tracking.items,
-      },
       monthly: {
         ...config.monthly,
         items: content.monthly.items,
@@ -118,56 +107,7 @@
   }
 
   // ---------------------------------------------------------
-  // WEEKLY
-  // ---------------------------------------------------------
-  function renderWeekly(data) {
-    document.getElementById("weeklyHeading").textContent = data.heading;
-
-    const headRow = document.getElementById("weeklyHeaderRow");
-    data.days.forEach((day) => {
-      const th = document.createElement("th");
-      th.textContent = day.day;
-      th.style.background = day.color;
-      headRow.appendChild(th);
-    });
-
-    const body = document.getElementById("weeklyCategoryRow");
-
-    const maxItems = Math.max(...data.days.map((d) => d.items.length));
-
-    for (let i = 0; i < maxItems; i++) {
-      const tr = document.createElement("tr");
-      data.days.forEach((day, dayIndex) => {
-        const td = document.createElement("td");
-        td.className = "item";
-        const text = day.items[i] || "";
-
-        if (text) {
-          const line = document.createElement("div");
-          line.className = "task-line";
-
-          const rowGroup = makeRowGroup(line);
-          const id = `${currentTodoKey}-w-${dayIndex}-${i}`;
-          const cb = makeCheckbox({ id, className: "chk", rowGroup });
-
-          const span = document.createElement("span");
-          span.className = "task-text";
-          span.textContent = text;
-
-          line.appendChild(cb);
-          line.appendChild(span);
-          td.appendChild(line);
-
-          updateRowGroup(rowGroup);
-        }
-        tr.appendChild(td);
-      });
-      body.appendChild(tr);
-    }
-  }
-
-  // ---------------------------------------------------------
-  // Generic grid section (Tracking/ Monthly / Quarterly / Semi Annual):
+  // Generic grid section (Monthly / Quarterly / Semi Annual):
   // each task's label AND its period checkboxes sit together
   // on one row. A task's text greys out once every checkbox
   // in that same row is checked.
@@ -377,20 +317,6 @@
   }
 
   // ---------------------------------------------------------
-  // Reset
-  // ---------------------------------------------------------
-  function wireResetButton() {
-    const btn = document.getElementById("resetBtn");
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      if (!confirm("Xóa toàn bộ trạng thái đã tick và bắt đầu lại?")) return;
-      state = {};
-      saveState();
-      location.reload();
-    });
-  }
-
-  // ---------------------------------------------------------
   // Init
   // ---------------------------------------------------------
   async function init() {
@@ -398,37 +324,9 @@
     currentTodoKey = D.todo_key;
     state = loadState();
 
-    if (window.FinalizeData && typeof window.FinalizeData.loadPageState === "function") {
-      try {
-        const loggedState = await window.FinalizeData.loadPageState(currentTodoKey);
-        if (loggedState && typeof loggedState === "object") {
-          state = { ...state, ...loggedState };
-        } else if (
-          typeof window.FinalizeData.readLocalStorageState === "function"
-        ) {
-          state = {
-            ...state,
-            ...window.FinalizeData.readLocalStorageState(currentTodoKey),
-          };
-        }
-      } catch (e) {
-        console.warn("Could not load finalized state.", e);
-      }
-    }
-
     document.getElementById("mainTitle").textContent = D.title;
 
     renderDaily(D.daily);
-
-    renderWeekly(D.weekly);
-
-    renderGridSection({
-      data: D.tracking,
-      idPrefix: "t",
-      headingElId: "trackingHeading",
-      gridElId: "trackingGrid",
-      cellSize: 28,
-    });
 
     renderGridSection({
       data: D.monthly,
@@ -455,13 +353,6 @@
     });
 
     renderAnnual(D.annual);
-
-    if (window.FinalizeData && typeof window.FinalizeData.attachFinalizeButton === "function") {
-      window.FinalizeData.attachFinalizeButton({
-        todoKey: currentTodoKey,
-        getState: () => state,
-      });
-    }
   }
 
   document.addEventListener("DOMContentLoaded", init);
