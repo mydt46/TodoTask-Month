@@ -41,5 +41,20 @@
     if (error) throw error;
   }
 
-  window.WeeklyData = { loadByMonth, loadCurrentWeek, updateIsDone };
+  async function insertWeekly({ week, dayOfWeek, title, month }) {
+    const { data, error } = await getWeeklyTable()
+      .insert({ week, dayOfWeek, title, month, isDone: false })
+      .select("id,week,isCurrWeek,dayOfWeek,title,isDone,month")
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  window.WeeklyData = {
+    loadByMonth,
+    loadCurrentWeek,
+    updateIsDone,
+    insertWeekly,
+  };
 })();

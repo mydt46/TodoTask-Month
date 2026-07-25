@@ -16,7 +16,7 @@
       <nav class="month-menu" aria-label="Month menu">
         <a href="index.html" class="month-link">Following</a>
         <a href="task-07.html" class="month-link">Th07</a>
-        <a href="#" class="month-link">Th08</a>
+        <a href="task-08.html" class="month-link">Th08</a>
         <a href="#" class="month-link">Th09</a>
         <a href="#" class="month-link">Th10</a>
         <a href="#" class="month-link">Th11</a>
@@ -35,7 +35,16 @@
       </div>
 
       <section id="dailySection">
-        <h2 class="section-heading" id="dailyHeading"></h2>
+        <div class="section-heading-row">
+          <h2 class="section-heading" id="dailyHeading"></h2>
+          <button
+            type="button"
+            class="new-button new-todo-button"
+            data-todo-section="daily"
+          >
+            +
+          </button>
+        </div>
         <div class="annual-cols">
           <div class="annual-block" id="dailyLeft"></div>
           <div class="annual-block" id="dailyRight"></div>
@@ -45,13 +54,31 @@
       <div class="row bottom">
         <div class="col" style="flex: 2">
           <section id="monthlySection">
-            <h2 class="section-heading" id="monthlyHeading"></h2>
+            <div class="section-heading-row">
+              <h2 class="section-heading" id="monthlyHeading"></h2>
+              <button
+                type="button"
+                class="new-button new-tracking-button"
+                data-tracking-section="monthly"
+              >
+                +
+              </button>
+            </div>
             <div class="task-grid" id="monthlyGrid"></div>
           </section>
         </div>
         <div class="col" style="flex: 1">
           <section id="quarterlySection">
-            <h2 class="section-heading" id="quarterlyHeading"></h2>
+            <div class="section-heading-row">
+              <h2 class="section-heading" id="quarterlyHeading"></h2>
+              <button
+                type="button"
+                class="new-button new-tracking-button"
+                data-tracking-section="quarterly"
+              >
+                +
+              </button>
+            </div>
             <div class="task-grid" id="quarterlyGrid"></div>
           </section>
         </div>
@@ -59,12 +86,30 @@
 
       <div class="row bottom">
         <div class="col" style="flex: 1">
-          <h2 class="section-heading" id="semiHeading"></h2>
+          <div class="section-heading-row">
+            <h2 class="section-heading" id="semiHeading"></h2>
+            <button
+              type="button"
+              class="new-button new-tracking-button"
+              data-tracking-section="semiAnnual"
+            >
+              +
+            </button>
+          </div>
           <div class="task-grid" id="semiGrid"></div>
         </div>
         <div class="col" style="flex: 2">
           <section id="annualSection">
-            <h2 class="section-heading" id="annualHeading"></h2>
+            <div class="section-heading-row">
+              <h2 class="section-heading" id="annualHeading"></h2>
+              <button
+                type="button"
+                class="new-button new-todo-button"
+                data-todo-section="annual"
+              >
+                +
+              </button>
+            </div>
             <div class="annual-cols">
               <div class="annual-block" id="annualLeft"></div>
               <div class="annual-block" id="annualRight"></div>
@@ -73,6 +118,58 @@
         </div>
       </div>
     </div>
+
+    <dialog class="tracking-dialog" id="newTrackingDialog">
+      <form method="dialog" id="newTrackingForm">
+        <div class="dialog-header">
+          <h3 id="newTrackingDialogTitle">New tracking</h3>
+          <button
+            type="button"
+            class="dialog-close"
+            id="closeTrackingDialog"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <label for="newTrackingTitle">Title</label>
+        <input
+          type="text"
+          id="newTrackingTitle"
+          name="title"
+          maxlength="255"
+          required
+        />
+        <p class="form-error" id="newTrackingError" role="alert"></p>
+        <button type="submit" class="submit-button">Submit</button>
+      </form>
+    </dialog>
+
+    <dialog class="tracking-dialog" id="newTodoDialog">
+      <form method="dialog" id="newTodoForm">
+        <div class="dialog-header">
+          <h3 id="newTodoDialogTitle">New todo</h3>
+          <button
+            type="button"
+            class="dialog-close"
+            id="closeTodoDialog"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <label for="newTodoLetter">Letter</label>
+        <input type="text" id="newTodoLetter" name="letter" maxlength="255" required />
+        <label for="newTodoTitle">Title</label>
+        <input type="text" id="newTodoTitle" name="title" maxlength="255" required />
+        <label class="checkbox-label" for="newTodoIsLeft">
+          <input type="checkbox" id="newTodoIsLeft" name="isLeft" />
+          Is left
+        </label>
+        <p class="form-error" id="newTodoError" role="alert"></p>
+        <button type="submit" class="submit-button">Submit</button>
+      </form>
+    </dialog>
 
     <script src="js/content-year.js"></script>
     <script src="js/data.js"></script>

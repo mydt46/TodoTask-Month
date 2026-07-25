@@ -24,7 +24,7 @@ create table public.tracking (
   month smallint null,
   tracking json null,
   "startFollowing" smallint null default '0'::smallint,
-  "qtyFollowing" smallint null,
+  "qtyFollowing" smallint null default '0'::smallint,
   constraint tracking_pkey primary key (id)
 ) TABLESPACE pg_default;
 

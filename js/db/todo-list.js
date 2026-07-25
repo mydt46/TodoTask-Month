@@ -42,5 +42,27 @@
     if (error) throw error;
   }
 
-  window.TodoListData = { loadByMonth, loadFollowing, updateIsDone };
+  async function insertTodo({ letter, title, isLeft, month }) {
+    const { data, error } = await getTodoTable()
+      .insert({
+        letter,
+        title,
+        isLeft,
+        month,
+        isDone: false,
+        isFollowing: false,
+      })
+      .select("id,month,letter,title,isDone,isLeft,isFollowing")
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  window.TodoListData = {
+    loadByMonth,
+    loadFollowing,
+    updateIsDone,
+    insertTodo,
+  };
 })();

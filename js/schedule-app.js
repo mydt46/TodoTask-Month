@@ -206,13 +206,13 @@
 
     heading.textContent = data.heading;
     const weekCount = data.weeks.length;
+    section.querySelector(".weekly-list")?.remove();
 
     if (weekCount === 1) {
-      const headerRow = getElement("weeklyHeaderRow");
-      const body = getElement("weeklyCategoryRow");
-      if (headerRow && body) {
-        renderWeeklyTable(data.weeks[0], headerRow, body, 1, weekCount);
-      }
+      section.querySelector("table.weekly")?.remove();
+      const { table, headerRow, body } = createWeeklyTable();
+      section.appendChild(table);
+      renderWeeklyTable(data.weeks[0], headerRow, body, 1, weekCount);
       return;
     }
 
@@ -232,6 +232,75 @@
       );
     }
     section.appendChild(weeklyList);
+  }
+
+  function setupNewWeeklyForm(data) {
+    const openButton = getElement("newWeeklyButton");
+    const dialog = getElement("newWeeklyDialog");
+    const closeButton = getElement("closeWeeklyDialog");
+    const form = getElement("newWeeklyForm");
+    const titleInput = getElement("newWeeklyTitle");
+    const weekInput = getElement("newWeeklyWeek");
+    const dayInput = getElement("newWeeklyDay");
+    const errorElement = getElement("newWeeklyError");
+    if (
+      !openButton ||
+      !dialog ||
+      !closeButton ||
+      !form ||
+      !titleInput ||
+      !weekInput ||
+      !dayInput ||
+      !errorElement
+    ) {
+      return;
+    }
+
+    openButton.addEventListener("click", () => {
+      form.reset();
+      errorElement.textContent = "";
+      dialog.showModal();
+      weekInput.focus();
+    });
+    closeButton.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const title = titleInput.value.trim();
+      if (!title) {
+        errorElement.textContent = "Please enter a title.";
+        titleInput.focus();
+        return;
+      }
+
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      errorElement.textContent = "";
+
+      try {
+        await window.WeeklyData.insertWeekly({
+          week: Number(weekInput.value),
+          dayOfWeek: Number(dayInput.value),
+          title,
+          month: data.month,
+        });
+        const weeklyRows = await window.WeeklyData.loadByMonth(data.month);
+        data.weekly.weeks = groupWeeklyRows(weeklyRows);
+        renderWeekly(data.weekly);
+        dialog.close();
+        showUpdateAlert(true);
+      } catch (error) {
+        console.error("Could not create weekly task.", error);
+        errorElement.textContent =
+          "Could not create weekly task. Please try again.";
+        showUpdateAlert(false);
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
   }
 
   function groupWeeklyRows(rows) {
@@ -396,6 +465,108 @@
       24,
       "tracking-month",
     );
+  }
+
+  function setupNewTrackingForm(data) {
+    const openButtons = document.querySelectorAll(".new-tracking-button");
+    const dialog = getElement("newTrackingDialog");
+    const closeButton = getElement("closeTrackingDialog");
+    const form = getElement("newTrackingForm");
+    const titleInput = getElement("newTrackingTitle");
+    const errorElement = getElement("newTrackingError");
+    const dialogTitle = getElement("newTrackingDialogTitle");
+    if (
+      !openButtons.length ||
+      !dialog ||
+      !closeButton ||
+      !form ||
+      !titleInput ||
+      !errorElement
+    ) {
+      return;
+    }
+
+    let activeSectionName = "";
+    openButtons.forEach((openButton) => {
+      openButton.addEventListener("click", () => {
+        activeSectionName = openButton.dataset.trackingSection;
+        form.reset();
+        errorElement.textContent = "";
+        if (dialogTitle) {
+          dialogTitle.textContent = `New ${data[activeSectionName]?.heading || "tracking"}`;
+        }
+        dialog.showModal();
+        titleInput.focus();
+      });
+    });
+
+    closeButton.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const title = titleInput.value.trim();
+      if (!title) {
+        errorElement.textContent = "Please enter a title.";
+        titleInput.focus();
+        return;
+      }
+
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      errorElement.textContent = "";
+
+      try {
+        const sectionData = data[activeSectionName];
+        const month =
+          activeSectionName === "tracking_month"
+            ? data.month
+            : sectionData?.trackingMonth;
+        if (month === undefined) {
+          throw new Error(`Missing trackingMonth for ${activeSectionName}.`);
+        }
+        const qtyTracking = Number(sectionData?.qtyTracking);
+        if (!Number.isInteger(qtyTracking) || qtyTracking < 0) {
+          throw new Error(`Invalid qtyTracking for ${activeSectionName}.`);
+        }
+
+        await window.TrackingData.insertTracking({
+          title,
+          month,
+          tracking: Array(qtyTracking).fill(false),
+        });
+        const rows = await window.TrackingData.loadByMonth(month);
+        if (activeSectionName === "tracking_month") {
+          renderTrackingMonth(sectionData, rows);
+        } else {
+          const sectionRenderOptions = {
+            monthly: ["monthlyHeading", "monthlyGrid", 28],
+            quarterly: ["quarterlyHeading", "quarterlyGrid", 28],
+            semiAnnual: ["semiHeading", "semiGrid", 32],
+          };
+          const [headingId, gridId, cellSize] =
+            sectionRenderOptions[activeSectionName];
+          renderTrackingGrid(
+            sectionData,
+            rows,
+            headingId,
+            gridId,
+            cellSize,
+            activeSectionName,
+          );
+        }
+        dialog.close();
+        showUpdateAlert(true);
+      } catch (error) {
+        console.error("Could not create tracking row.", error);
+        errorElement.textContent = "Could not create tracking. Please try again.";
+        showUpdateAlert(false);
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
   }
 
   function renderFollowingTracking(data, rows) {
@@ -619,8 +790,108 @@
     });
   }
 
+  function setupNewTodoForm(data) {
+    const buttons = document.querySelectorAll(".new-todo-button");
+    const dialog = getElement("newTodoDialog");
+    const form = getElement("newTodoForm");
+    const closeButton = getElement("closeTodoDialog");
+    const letterInput = getElement("newTodoLetter");
+    const titleInput = getElement("newTodoTitle");
+    const isLeftInput = getElement("newTodoIsLeft");
+    const errorElement = getElement("newTodoError");
+    const dialogTitle = getElement("newTodoDialogTitle");
+    let activeSectionName = "daily";
+
+    if (
+      !buttons.length ||
+      !dialog ||
+      !form ||
+      !closeButton ||
+      !letterInput ||
+      !titleInput ||
+      !isLeftInput ||
+      !errorElement
+    ) {
+      return;
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeSectionName = button.dataset.todoSection || "daily";
+        form.reset();
+        errorElement.textContent = "";
+        if (dialogTitle) {
+          dialogTitle.textContent =
+            activeSectionName === "annual" ? "New annual todo" : "New todo";
+        }
+        dialog.showModal();
+        letterInput.focus();
+      });
+    });
+
+    closeButton.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submitButton = form.querySelector('[type="submit"]');
+      const sectionData = data[activeSectionName];
+      const month =
+        sectionData?.todoMonth !== undefined
+          ? sectionData.todoMonth
+          : data.month;
+      const letter = letterInput.value.trim();
+      const title = titleInput.value.trim();
+
+      if (!letter || !title) {
+        errorElement.textContent = "Letter and title are required.";
+        return;
+      }
+
+      submitButton.disabled = true;
+      errorElement.textContent = "";
+
+      try {
+        if (!window.TodoListData?.insertTodo) {
+          throw new Error("Todo list data service is not loaded.");
+        }
+
+        await window.TodoListData.insertTodo({
+          letter,
+          title,
+          isLeft: isLeftInput.checked,
+          month,
+        });
+
+        const rows = await window.TodoListData.loadByMonth(month);
+        const renderOptions =
+          activeSectionName === "annual"
+            ? {
+                headingId: "annualHeading",
+                leftId: "annualLeft",
+                rightId: "annualRight",
+                rowClass: "annual-row",
+                statePrefix: "annual-todo",
+              }
+            : {};
+        renderTodoRows(sectionData, rows, renderOptions);
+        dialog.close();
+      } catch (error) {
+        console.error("Could not insert todo row.", error);
+        errorElement.textContent = "Could not save todo. Please try again.";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  }
+
   async function init() {
     const data = combineScheduleData(SCHEDULE_DATA, getScheduleContent());
+    setupNewTrackingForm(data);
+    setupNewWeeklyForm(data);
+    setupNewTodoForm(data);
     currentTodoKey = data.todo_key;
 
     getElement("mainTitle").textContent = data.title;

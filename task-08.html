@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TODO Th07</title>
+    <title>TODO Th08</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
@@ -15,10 +15,10 @@
     <div class="sheet">
       <nav class="month-menu" aria-label="Month menu">
         <a href="index.html" class="month-link">Following</a>
-        <a href="task-07.html" class="month-link active" aria-current="page"
-          >Th07</a
+        <a href="task-07.html" class="month-link">Th07</a>
+        <a href="task-08.html" class="month-link active" aria-current="page"
+          >Th08</a
         >
-        <a href="task-08.html" class="month-link">Th08</a>
         <a href="#" class="month-link">Th09</a>
         <a href="#" class="month-link">Th10</a>
         <a href="#" class="month-link">Th11</a>
@@ -41,7 +41,9 @@
             type="button"
             class="new-button new-todo-button"
             data-todo-section="daily"
-          >+</button>
+          >
+            +
+          </button>
         </div>
         <div class="annual-cols">
           <div class="annual-block" id="dailyLeft"></div>
@@ -104,9 +106,21 @@
             </button>
           </div>
           <label for="newTodoLetter">Letter</label>
-          <input type="text" id="newTodoLetter" name="letter" maxlength="255" required />
+          <input
+            type="text"
+            id="newTodoLetter"
+            name="letter"
+            maxlength="255"
+            required
+          />
           <label for="newTodoTitle">Title</label>
-          <input type="text" id="newTodoTitle" name="title" maxlength="255" required />
+          <input
+            type="text"
+            id="newTodoTitle"
+            name="title"
+            maxlength="255"
+            required
+          />
           <label class="checkbox-label" for="newTodoIsLeft">
             <input type="checkbox" id="newTodoIsLeft" name="isLeft" />
             Is left
@@ -174,10 +188,9 @@
           <button type="submit" class="submit-button">Submit</button>
         </form>
       </dialog>
-
     </div>
 
-    <script src="js/content-07.js"></script>
+    <script src="js/content-08.js"></script>
     <script src="js/data.js"></script>
     <!-- common -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

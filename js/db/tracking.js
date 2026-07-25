@@ -38,5 +38,20 @@
     if (error) throw error;
   }
 
-  window.TrackingData = { loadByMonth, loadFollowing, updateTracking };
+  async function insertTracking({ title, month, tracking }) {
+    const { data, error } = await getTrackingTable()
+      .insert({ title, month, tracking })
+      .select("id,title,month,tracking")
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  window.TrackingData = {
+    loadByMonth,
+    loadFollowing,
+    updateTracking,
+    insertTracking,
+  };
 })();
