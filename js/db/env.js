@@ -1,8 +1,8 @@
 (function () {
 
-  const SUPABASE_URL = "https://xxxxx.supabase.co";
+  const SUPABASE_URL = "https://owmgddevecstmixbbzma.supabase.co";
   const SUPABASE_ANON_KEY =
-    "eyJh-xxxxx";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93bWdkZGV2ZWNzdG1peGJiem1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MjUzNjMsImV4cCI6MjEwMDQwMTM2M30.pmGnUuyZUp5_tSr7dqY3b8SPKvS36T0z3T84mSt0cfw";
 
   const SUPABASE_SCHEMA = "public";
 
