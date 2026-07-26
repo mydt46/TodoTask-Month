@@ -44,6 +44,69 @@
     }, 1000);
   }
 
+  function getFollowingPeriod(month, now = new Date()) {
+    const year = now.getFullYear();
+    const monthIndex = Number(month) - 1;
+    const monthStart = new Date(year, monthIndex, 1);
+    const monthEnd = new Date(year, monthIndex + 1, 0);
+    const mondayOffset = (now.getDay() + 6) % 7;
+    const weekMonday = new Date(year, now.getMonth(), now.getDate() - mondayOffset);
+    const weekSunday = new Date(
+      weekMonday.getFullYear(),
+      weekMonday.getMonth(),
+      weekMonday.getDate() + 6,
+    );
+    const followingStart = weekMonday < monthStart ? monthStart : weekMonday;
+    const followingEnd = weekSunday > monthEnd ? monthEnd : weekSunday;
+
+    if (followingStart > followingEnd) {
+      return { startFollowing: 0, qtyFollowing: 0, week: 0 };
+    }
+
+    return {
+      startFollowing: followingStart.getDate() - 1,
+      qtyFollowing:
+        Math.round((followingEnd - followingStart) / 86400000) + 1,
+      week: Math.ceil(now.getDate() / 7),
+    };
+  }
+
+  function setupFollowTasks(data) {
+    const button = getElement("followTasksButton");
+    if (!button) return;
+
+    button.addEventListener("click", async () => {
+      const period = getFollowingPeriod(data.month);
+      button.disabled = true;
+
+      try {
+        if (
+          !window.TodoListData?.followUnfinishedByMonth ||
+          !window.TrackingData?.setFollowingPeriodByMonth ||
+          !window.WeeklyData?.setCurrentWeekByMonth
+        ) {
+          throw new Error("Follow tasks data services are not loaded.");
+        }
+
+        await Promise.all([
+          window.TodoListData.followUnfinishedByMonth(data.month),
+          window.TrackingData.setFollowingPeriodByMonth(
+            data.month,
+            period.startFollowing,
+            period.qtyFollowing,
+          ),
+          window.WeeklyData.setCurrentWeekByMonth(data.month, period.week),
+        ]);
+        showUpdateAlert(true);
+      } catch (error) {
+        console.error("Could not update followed tasks.", error);
+        showUpdateAlert(false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+
   function updateRow(rowGroup) {
     if (!rowGroup.ids.length) return;
     const isDone = rowGroup.ids.every((id) => Boolean(state[id]));
@@ -892,6 +955,7 @@
     setupNewTrackingForm(data);
     setupNewWeeklyForm(data);
     setupNewTodoForm(data);
+    setupFollowTasks(data);
     currentTodoKey = data.todo_key;
 
     getElement("mainTitle").textContent = data.title;

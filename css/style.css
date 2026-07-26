@@ -168,6 +168,32 @@ h2.section-heading {
   opacity: 0.65;
 }
 
+.follow-tasks-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+.follow-tasks-button {
+  min-width: 180px;
+  border: 0;
+  border-radius: 24px;
+  background: #1e73be;
+  color: #fff;
+  font: 700 14px/1 "Inter", sans-serif;
+  padding: 13px 24px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+.follow-tasks-button:hover {
+  background: #175c98;
+}
+.follow-tasks-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .tracking-dialog {
   width: min(420px, calc(100% - 32px));
   padding: 0;
