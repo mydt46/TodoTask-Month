@@ -42,6 +42,23 @@
     if (error) throw error;
   }
 
+  async function followUnfinishedByMonth(month) {
+    const { error: finishedError } = await getTodoTable()
+      .update({ isFollowing: false })
+      .eq("month", month)
+      .eq("isFollowing", true)
+      .eq("isDone", true);
+
+    if (finishedError) throw finishedError;
+
+    const { error: unfinishedError } = await getTodoTable()
+      .update({ isFollowing: true })
+      .eq("month", month)
+      .eq("isDone", false);
+
+    if (unfinishedError) throw unfinishedError;
+  }
+
   async function insertTodo({ letter, title, isLeft, month }) {
     const { data, error } = await getTodoTable()
       .insert({
@@ -63,6 +80,7 @@
     loadByMonth,
     loadFollowing,
     updateIsDone,
+    followUnfinishedByMonth,
     insertTodo,
   };
 })();

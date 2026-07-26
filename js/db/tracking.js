@@ -38,6 +38,20 @@
     if (error) throw error;
   }
 
+  async function setFollowingPeriodByMonth(month, startFollowing, qtyFollowing) {
+    const { error: resetError } = await getTrackingTable()
+      .update({ qtyFollowing: 0 })
+      .eq("month", month);
+
+    if (resetError) throw resetError;
+
+    const { error: updateError } = await getTrackingTable()
+      .update({ startFollowing, qtyFollowing })
+      .eq("month", month);
+
+    if (updateError) throw updateError;
+  }
+
   async function insertTracking({ title, month, tracking }) {
     const { data, error } = await getTrackingTable()
       .insert({ title, month, tracking })
@@ -52,6 +66,7 @@
     loadByMonth,
     loadFollowing,
     updateTracking,
+    setFollowingPeriodByMonth,
     insertTracking,
   };
 })();
