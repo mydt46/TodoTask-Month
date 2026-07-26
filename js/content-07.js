@@ -1,19 +1,21 @@
 // ============================================================
-// Editable task content for TODO Th08.
+// content.js - Editable task content for TODO Th07.
 // data.js keeps layout/colors/labels and reads task text from here.
 // ============================================================
 
 const SCHEDULE_CONTENT = {
-  todo_key: "m8",
-  title: "TODO Th08",
-  month: 8,
+  todo_key: "m7",
+  title: "TODO Th07",
+  month: 7,
   daily: {
     left: [],
     right: [],
   },
+  // ============== tracking
   tracking_month: {
-    qtyTracking: 31,
+    qtyTracking: 30,
   },
+  // ============== weekly
   weekly: {
     weeks: [],
   },
