@@ -38,6 +38,14 @@
     if (error) throw error;
   }
 
+  async function stopFollowing(id) {
+    const { error } = await getTrackingTable()
+      .update({ startFollowing: 0, qtyFollowing: 0 })
+      .eq("id", id);
+
+    if (error) throw error;
+  }
+
   async function setFollowingPeriodByMonth(month, startFollowing, qtyFollowing) {
     const { error: resetError } = await getTrackingTable()
       .update({ qtyFollowing: 0 })
@@ -66,6 +74,7 @@
     loadByMonth,
     loadFollowing,
     updateTracking,
+    stopFollowing,
     setFollowingPeriodByMonth,
     insertTracking,
   };

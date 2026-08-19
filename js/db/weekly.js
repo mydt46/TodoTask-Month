@@ -56,6 +56,22 @@
     if (updateError) throw updateError;
   }
 
+  async function changeCurrentWeek(previousMonth, month, week) {
+    const { error: resetError } = await getWeeklyTable()
+      .update({ isCurrWeek: false })
+      .eq("month", previousMonth)
+      .eq("isCurrWeek", true);
+
+    if (resetError) throw resetError;
+
+    const { error: updateError } = await getWeeklyTable()
+      .update({ isCurrWeek: true })
+      .eq("month", month)
+      .eq("week", week);
+
+    if (updateError) throw updateError;
+  }
+
   async function insertWeekly({ week, dayOfWeek, title, month }) {
     const { data, error } = await getWeeklyTable()
       .insert({ week, dayOfWeek, title, month, isDone: false })
@@ -71,6 +87,7 @@
     loadCurrentWeek,
     updateIsDone,
     setCurrentWeekByMonth,
+    changeCurrentWeek,
     insertWeekly,
   };
 })();
