@@ -297,6 +297,61 @@
     section.appendChild(weeklyList);
   }
 
+  function setupWeeklyFollowingControls(data, initialRows) {
+    const weekSelect = getElement("followingWeekSelect");
+    const monthSelect = getElement("followingMonthSelect");
+    const yearSelect = getElement("followingYearSelect");
+    if (!weekSelect || !monthSelect || !yearSelect) return;
+
+    const now = new Date();
+    const currentRow = initialRows[0];
+    let selectedMonth = Number(currentRow?.month) || now.getMonth() + 1;
+    const selectedWeek = Number(currentRow?.week) || Math.ceil(now.getDate() / 7);
+
+    for (let week = 1; week <= 5; week += 1) {
+      weekSelect.add(new Option(String(week), String(week)));
+    }
+    for (let month = 1; month <= 12; month += 1) {
+      monthSelect.add(new Option(`Tháng ${month}`, String(month)));
+    }
+    for (let year = now.getFullYear() - 2; year <= now.getFullYear() + 3; year += 1) {
+      yearSelect.add(new Option(String(year), String(year)));
+    }
+
+    weekSelect.value = String(Math.min(5, Math.max(1, selectedWeek)));
+    monthSelect.value = String(selectedMonth);
+    yearSelect.value = String(now.getFullYear());
+
+    const selects = [weekSelect, monthSelect, yearSelect];
+    const handleChange = async () => {
+      const previousValues = selects.map((select) => select.dataset.previous || select.value);
+      const nextMonth = Number(monthSelect.value);
+      const nextWeek = Number(weekSelect.value);
+      selects.forEach((select) => { select.disabled = true; });
+
+      try {
+        await window.WeeklyData.changeCurrentWeek(selectedMonth, nextMonth, nextWeek);
+        selectedMonth = nextMonth;
+        selects.forEach((select) => { select.dataset.previous = select.value; });
+        const rows = await window.WeeklyData.loadCurrentWeek();
+        data.weeks = groupWeeklyRows(rows);
+        renderWeekly(data);
+        showUpdateAlert(true);
+      } catch (error) {
+        selects.forEach((select, index) => { select.value = previousValues[index]; });
+        console.error("Could not change the current week.", error);
+        showUpdateAlert(false);
+      } finally {
+        selects.forEach((select) => { select.disabled = false; });
+      }
+    };
+
+    selects.forEach((select) => {
+      select.dataset.previous = select.value;
+      select.addEventListener("change", handleChange);
+    });
+  }
+
   function setupNewWeeklyForm(data) {
     const openButton = getElement("newWeeklyButton");
     const dialog = getElement("newWeeklyDialog");
@@ -680,6 +735,33 @@
       row.style.gridTemplateColumns = columns;
       const labelCell = createElement("div", "task-row-label");
       const { lineElement, rowGroup } = createTaskLine(trackingRow.title || "");
+      const stopFollowingButton = createElement(
+        "button",
+        "stop-following-button",
+        "🗑",
+      );
+      stopFollowingButton.type = "button";
+      stopFollowingButton.title = "Bỏ theo dõi mục này";
+      stopFollowingButton.setAttribute(
+        "aria-label",
+        `Bỏ theo dõi ${trackingRow.title || "mục này"}`,
+      );
+      stopFollowingButton.addEventListener("click", async () => {
+        stopFollowingButton.disabled = true;
+        try {
+          await window.TrackingData.stopFollowing(trackingRow.id);
+          row.remove();
+          showUpdateAlert(true);
+        } catch (error) {
+          console.error(
+            `Could not stop following tracking row ${trackingRow.id}.`,
+            error,
+          );
+          stopFollowingButton.disabled = false;
+          showUpdateAlert(false);
+        }
+      });
+      lineElement.prepend(stopFollowingButton);
       labelCell.appendChild(lineElement);
       row.appendChild(labelCell);
 
@@ -985,6 +1067,9 @@
           : await window.WeeklyData.loadByMonth(data.month || 0);
         data.weekly.weeks = groupWeeklyRows(weeklyRows);
         renderWeekly(data.weekly);
+        if (data.weekly.currentWeekOnly) {
+          setupWeeklyFollowingControls(data.weekly, weeklyRows);
+        }
       } catch (error) {
         console.error("Could not load weekly data from Supabase.", error);
         data.weekly.weeks = [];

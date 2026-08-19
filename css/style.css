@@ -268,6 +268,32 @@ h2.section-heading {
 }
 
 /* ---------- Weekly ---------- */
+.weekly-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.weekly-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.weekly-filters label {
+  display: grid;
+  gap: 3px;
+  color: #666;
+  font-size: 11px;
+}
+.weekly-filters select {
+  min-width: 74px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+  color: #1f2328;
+}
 table.weekly {
   width: 100%;
   border-collapse: collapse;
@@ -304,6 +330,23 @@ table.weekly td.item {
 }
 .task-line.done .task-text {
   color: var(--done);
+}
+
+.stop-following-button {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 18px;
+}
+.stop-following-button:hover {
+  transform: scale(1.12);
+}
+.stop-following-button:disabled {
+  cursor: wait;
+  opacity: 0.45;
 }
 
 /* checkbox used inline with text (weekly items, monthly/quarterly/semi list rows) */

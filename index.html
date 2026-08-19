@@ -53,7 +53,23 @@
       </div>
 
       <section id="weeklySection">
-        <h2 class="section-heading" id="weeklyHeading"></h2>
+        <div class="weekly-heading-row">
+          <h2 class="section-heading" id="weeklyHeading"></h2>
+          <div class="weekly-filters" aria-label="Chọn tuần hiện tại">
+            <label>
+              <span>Tuần</span>
+              <select id="followingWeekSelect" aria-label="Tuần"></select>
+            </label>
+            <label>
+              <span>Tháng</span>
+              <select id="followingMonthSelect" aria-label="Tháng"></select>
+            </label>
+            <label>
+              <span>Năm</span>
+              <select id="followingYearSelect" aria-label="Năm"></select>
+            </label>
+          </div>
+        </div>
         <table class="weekly">
           <thead>
             <tr id="weeklyHeaderRow"></tr>
