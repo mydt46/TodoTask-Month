@@ -19,10 +19,10 @@
           >Th07</a
         >
         <a href="task-08.html" class="month-link">Th08</a>
-        <a href="#" class="month-link">Th09</a>
-        <a href="#" class="month-link">Th10</a>
-        <a href="#" class="month-link">Th11</a>
-        <a href="#" class="month-link">Th12</a>
+        <a href="task-09.html" class="month-link">Th09</a>
+        <a href="task-10.html" class="month-link">Th10</a>
+        <a href="task-11.html" class="month-link">Th11</a>
+        <a href="task-12.html" class="month-link">Th12</a>
         <a href="task-year.html" class="month-link">ALL</a>
       </nav>
 
@@ -41,7 +41,9 @@
             type="button"
             class="new-button new-todo-button"
             data-todo-section="daily"
-          >+</button>
+          >
+            +
+          </button>
         </div>
         <div class="annual-cols">
           <div class="annual-block" id="dailyLeft"></div>
@@ -104,9 +106,21 @@
             </button>
           </div>
           <label for="newTodoLetter">Letter</label>
-          <input type="text" id="newTodoLetter" name="letter" maxlength="255" required />
+          <input
+            type="text"
+            id="newTodoLetter"
+            name="letter"
+            maxlength="255"
+            required
+          />
           <label for="newTodoTitle">Title</label>
-          <input type="text" id="newTodoTitle" name="title" maxlength="255" required />
+          <input
+            type="text"
+            id="newTodoTitle"
+            name="title"
+            maxlength="255"
+            required
+          />
           <label class="checkbox-label" for="newTodoIsLeft">
             <input type="checkbox" id="newTodoIsLeft" name="isLeft" />
             Is left
@@ -176,7 +190,11 @@
       </dialog>
 
       <div class="follow-tasks-actions">
-        <button type="button" class="follow-tasks-button" id="followTasksButton">
+        <button
+          type="button"
+          class="follow-tasks-button"
+          id="followTasksButton"
+        >
           Follow tasks
         </button>
       </div>
